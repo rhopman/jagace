@@ -19,6 +19,7 @@ function rounded(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r)
 
 function drawBlock(b,ghost=false){sideView.drawBlock(state,b,viewport(),ghost);}
 function draw(){
+  if(W<=55||H<=100)return;
   ctx.clearRect(0,0,W,H);
   sideView.drawBackdrop(viewport(),!!selection||erase);
   Object.values(state.blocks).filter(b=>b.type==='belt').forEach(b=>drawBlock(b));

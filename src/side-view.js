@@ -27,17 +27,30 @@ export function createSideViewRenderer(ctx, sprites) {
     const ports=new Set([...inputs,output]);
     if(!inputs.length)ports.add((output+2)%4);
     const reach=side=>inputs.includes(side)||(side===output&&outputConnected)? .5:.32;
-    const left=ports.has(2)? .5-reach(2):.5;
-    const right=ports.has(0)? .5+reach(0):.5;
+    let left=ports.has(2)? .5-reach(2):.5;
+    let right=ports.has(0)? .5+reach(0):.5;
     const hasHorizontal=ports.has(0)||ports.has(2);
     const hasVertical=ports.has(1)||ports.has(3);
+    const transfer=hasVertical&&hasHorizontal;
+    if(transfer){
+      // The belt runs through the full lift bay, not just to its center.
+      left=Math.min(left,.33);right=Math.max(right,.67);
+    }
     if(hasVertical){
-      const top=ports.has(3)? .5-reach(3):.5;
-      const bottom=ports.has(1)? .5+reach(1):.69;
+      const top=ports.has(3)? .5-reach(3):transfer?.36:.5;
+      const bottom=ports.has(1)? .5+reach(1):transfer?.81:.69;
       // Transparent lift shaft, guide rails, and moving carrier shelves.
-      box(x+c*.37,y+c*top,c*.26,c*(bottom-top),'#f2f6ee','#c7d2bd',0);
-      for(const px of [.37,.63])line(x+c*px,y+c*top,x+c*px,y+c*bottom,'#819574',Math.max(1,c*.045));
-      const direction=output===1?1:-1;
+      const railLeft=.37,railRight=.63;
+      box(x+c*railLeft,y+c*top,c*(railRight-railLeft),c*(bottom-top),'#f2f6ee',null,0);
+      for(const px of [railLeft,railRight]){
+        if(transfer){
+          // Open the guide rails at belt height so items have a clear doorway.
+          if(top<.59)line(x+c*px,y+c*top,x+c*px,y+c*.59,'#819574',Math.max(1,c*.045));
+          if(bottom>.8)line(x+c*px,y+c*.8,x+c*px,y+c*bottom,'#819574',Math.max(1,c*.045));
+        }else line(x+c*px,y+c*top,x+c*px,y+c*bottom,'#819574',Math.max(1,c*.045));
+      }
+      const verticalDirection=output%2?output:inputs.includes(3)?1:3;
+      const direction=verticalDirection===1?1:-1;
       const phase=(state.clock*.5)%1;
       ctx.save();ctx.beginPath();ctx.rect(x+c*.38,y+c*top,c*.24,c*(bottom-top));ctx.clip();
       for(let i=-1;i<5;i++){
@@ -45,12 +58,13 @@ export function createSideViewRenderer(ctx, sprites) {
         box(x+c*.4,y+c*level,c*.2,c*.035,'#a1b488',null,0);
       }
       ctx.restore();
-      arrow(x+c*.5,y+c*(top+bottom)/2,output===1?1:3,c*.07,'#718a5c');
+      const arrowY=transfer?(ports.has(3)?Math.max(top+.1,.43):Math.min(bottom-.08,.88)):(top+bottom)/2;
+      arrow(x+c*.5,y+c*arrowY,verticalDirection,c*.07,'#718a5c');
     }
     if(hasHorizontal){
       const length=(right-left)*c;
       // The narrow deck and exposed circular rollers read as a side-on belt.
-      box(x+c*left,y+c*.61,length,c*.18,'#788a6c','#5f7554',c*.065);
+      box(x+c*left,y+c*.61,length,c*.18,'#788a6c','#5f7554',transfer?1:c*.035);
       box(x+c*left,y+c*.6,length,c*.045,'#b6c89d',null,1);
       const count=Math.max(2,Math.round(length/(c*.16)));
       for(let i=0;i<count;i++){
@@ -71,10 +85,18 @@ export function createSideViewRenderer(ctx, sprites) {
       line(legX-c*.08,y+c*.96,legX+c*.08,y+c*.96,'#9ca98f',1);
       if(output%2===0)arrow(x+c*.5,y+c*.85,output,c*.07,'#7e926c');
     }
-    if(hasVertical&&hasHorizontal){
-      box(x+c*.34,y+c*.61,c*.32,c*.065,'#abbc96','#7f946d',1);
-      ctx.beginPath();ctx.arc(x+c*.5,y+c*.7,c*.065,0,Math.PI*2);ctx.fillStyle='#d6dfc6';ctx.fill();
-      line(x+c*.5,y+c*.7,x+c*.53,y+c*.68,'#7f946d');
+    if(transfer){
+      // Flush loading deck with inset rollers and a small protective canopy.
+      line(x+c*.33,y+c*.6,x+c*.67,y+c*.6,'#c8d8b4',Math.max(1,c*.03));
+      for(const px of [.39,.5,.61]){
+        ctx.beginPath();ctx.arc(x+c*px,y+c*.71,c*.038,0,Math.PI*2);
+        ctx.fillStyle='#e1e9d4';ctx.fill();
+        const angle=state.clock*3*(output===2?-1:1);
+        line(x+c*px,y+c*.71,x+c*px+Math.cos(angle)*c*.022,y+c*.71+Math.sin(angle)*c*.022,'#7f946d');
+      }
+      line(x+c*.3,y+c*.35,x+c*.7,y+c*.35,'#9caf89',Math.max(1,c*.035));
+      // Side brackets make the shaft and conveyor read as a single assembly.
+      for(const px of [.32,.64])box(x+c*px,y+c*.79,c*.04,c*.06,'#9caf89',null,0);
     }
   }
   function drawMachine(state,b,v) {
