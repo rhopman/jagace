@@ -70,3 +70,9 @@ New recipes include:
 | Metal + Energy | Gold |
 
 Existing browser saves remain compatible and retain their factories, balance, and discoveries.
+
+## Connected conveyors
+
+Select **Conveyor belt**, then press and drag across empty grid tiles. A continuous belt is built along the stroke, and corners turn automatically. Drag into an existing belt, factory, or seller to join it and finish the stroke; existing buildings are preserved. Each new belt costs ◈ 10. Individual placement and R/click rotation still work.
+
+Conveyor graphics adapt to their actual incoming neighbors and output. Straight sections meet at tile edges, corners bend, and multiple incoming belts merge into the single arrow direction. Rotating or removing neighbors updates the visible connections immediately. Disconnected ends remain capped until connected.
