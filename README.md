@@ -23,7 +23,7 @@ The starter factory produces earth and fire, combines them into lava, and sells 
 Choose the recipe under Factory before placing it; both ingredients must be discovered first. Craft three batches to discover its output and unlock that element’s producer. More valuable elements cost more to produce. Explore recipes for all twenty combinations and twenty-four elements.
 
 - **R**: rotate placement direction.
-- Click a placed block with nothing selected: rotate its output.
+- Click a placed producer with nothing selected: open speed upgrades and output controls. Click other placed blocks to rotate their output.
 - **Escape**: deselect.
 - **Backspace / Delete**: toggle removal mode (50% refund).
 - Right-click a block: remove it.
@@ -98,3 +98,12 @@ New games start with ◈ 500 and a working lava line. Only earth, wind, fire, an
 Factory costs start at ◈ 180 and increase by ◈ 60 for each additional recipe tier. Processing starts at two seconds and increases by 0.6 seconds per tier. Recipe depth is derived from its ingredients. The shop and recipe notebook show costs, processing times, ingredient requirements, and discovery progress.
 
 Existing saves keep their money, layouts, and producer unlocks. Newly discovered elements use the tougher progression. New purchases record their actual cost for 50% refunds; old factory purchases retain their original ◈ 150 valuation. Use Start fresh for the smaller starting budget and the complete new progression.
+
+
+## Producer speed upgrades
+
+Deselect the building tool with Escape, then click or tap a placed producer. Its control panel shows the current level, seconds per element, balance, next rate, and upgrade price. Each upgrade increases production speed by 25% multiplicatively, up to level 6. For example, Earth drops every 3 seconds at level 1 and every 2.4 seconds at level 2.
+
+Costs scale with the element’s producer price and rise for each level. Upgrades affect that individual block, preserve progress toward the next drop, and persist in browser saves. Unaffordable upgrades are disabled; the button becomes available as the running factory earns enough money. Fully upgraded producers display a maximum-level state. Producers show their upgraded level on the playground, and hover details show the actual interval.
+
+Use **Rotate output** in the same panel to change that producer’s direction. Removing an upgraded block refunds 50% of its original purchase and upgrade investments. Existing producers without upgrade data remain level 1.

@@ -1,5 +1,5 @@
 import { conveyorConnections } from './conveyors.js';
-import { elements, dirs } from './engine.js';
+import { elements, dirs,productionInterval,producerLevel } from './engine.js';
 
 // Side elevation renderer: tile positions remain the logical transport grid.
 export function createSideViewRenderer(ctx, sprites) {
@@ -134,9 +134,14 @@ export function createSideViewRenderer(ctx, sprites) {
       box(x+c*.25,y+c*.29,c*.5,c*.38,e.bg,e.color+'88',3);
       sprite(b.el,x+c*.32,y+c*.3,c*.36);
       ctx.beginPath();ctx.ellipse(x+c*.5,y+c*.63,c*.18,c*.028,0,0,Math.PI*2);ctx.strokeStyle=cyan;ctx.stroke();
-      const fraction=Math.min(b.timer/e.interval,1);
+      const fraction=Math.min(b.timer/productionInterval(b),1);
       box(x+c*.3,y+c*.735,c*.4,c*.035,'#bfd2df',null,1);
       if(fraction>0)box(x+c*.3,y+c*.735,c*.4*fraction,c*.035,cyan,null,1);
+      if(producerLevel(b)>1){
+        box(x+c*.6,y+c*.1,c*.24,c*.15,'#4d7a91',null,2);
+        ctx.font=`600 ${Math.max(6,c*.11)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#c9f8fa';
+        ctx.fillText('L'+producerLevel(b),x+c*.72,y+c*.175);
+      }
       const [dx,dy]=dirs[b.dir];
       line(x+c*.5+dx*c*.29,y+c*.5+dy*c*.29,x+c*.5+dx*c*.46,y+c*.5+dy*c*.46,alloy,c*.075);
       arrow(x+c*.5+dx*c*.39,y+c*.5+dy*c*.39,b.dir,c*.04,'#aaf0f3');
