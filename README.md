@@ -18,9 +18,9 @@ npm run build
 
 ## Play
 
-The starter factory produces earth and fire, combines them into lava, and sells it. Choose blocks in the shop and click an empty grid tile to place them. Producers emit on the element's timer. Conveyors carry elements in their arrow direction. Factories collect both ingredients and emit the recipe output every two seconds while supplied. Sellers accept every element.
+The starter factory produces earth and fire, combines them into lava, and sells it. Choose blocks in the shop and click an empty grid tile to place them. Producers emit on the element's timer. Conveyors carry elements in their arrow direction. Factories collect both ingredients and emit the recipe output while supplied. Basic recipes take two seconds per batch; each additional recipe tier adds 0.6 seconds. Sellers accept every element.
 
-Choose the recipe under Factory before placing it; building a factory unlocks its element's producer. More valuable elements cost more to produce. Explore recipes for all twenty combinations and twenty-four elements.
+Choose the recipe under Factory before placing it; both ingredients must be discovered first. Craft three batches to discover its output and unlock that element’s producer. More valuable elements cost more to produce. Explore recipes for all twenty combinations and twenty-four elements.
 
 - **R**: rotate placement direction.
 - Click a placed block with nothing selected: rotate its output.
@@ -89,3 +89,12 @@ The placement grid appears when building or removing blocks. This is a visual ch
 All buildings sit on repulsor bases with cyan energy fields and animated levitation rings. Maglev conveyor decks replace support legs, and illuminated lift shafts move items between levels. Factory buildings are fusion reactors, producers hold their elements in stasis chambers, and sellers use holographic trade displays. Matching shop illustrations identify each building.
 
 The workshop displays an anti-gravity status indicator and the help guide explains the hover technology. A gentle, synchronized hover animation keeps connected transport aligned; it respects the browser's reduced-motion preference. Simulation pauses also freeze hover motion. The background remains white and existing saves remain compatible.
+
+
+## Progression and difficulty
+
+New games start with ◈ 500 and a working lava line. Only earth, wind, fire, and water are initially discovered. An element is discovered after three successful factory batches; then its producer can be purchased. Factory recipes require their ingredients to be discovered, so late-game elements must be reached through the recipe chain.
+
+Factory costs start at ◈ 180 and increase by ◈ 60 for each additional recipe tier. Processing starts at two seconds and increases by 0.6 seconds per tier. Recipe depth is derived from its ingredients. The shop and recipe notebook show costs, processing times, ingredient requirements, and discovery progress.
+
+Existing saves keep their money, layouts, and producer unlocks. Newly discovered elements use the tougher progression. New purchases record their actual cost for 50% refunds; old factory purchases retain their original ◈ 150 valuation. Use Start fresh for the smaller starting budget and the complete new progression.
