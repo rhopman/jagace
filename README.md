@@ -48,7 +48,7 @@ In repository **Settings → Pages**, choose **GitHub Actions** as the build sou
 
 ## Element collection
 
-Every element has a distinct vector illustration shared by its producer, moving cargo, catalog, and recipe guide. Factories show chimneys, windows, and an output-element badge; sellers are market stalls, and conveyors have animated treads and rollers.
+Every element has a distinct vector illustration shared by its producer, moving cargo, catalog, and recipe guide. Factories show chimneys, windows, and an output-element badge; sellers are holographic trading terminals, and conveyors have animated treads and rollers.
 
 New recipes include:
 
@@ -79,6 +79,13 @@ Conveyor graphics adapt to their actual incoming neighbors and output. Straight 
 
 ## Side view
 
-The playground shows a side elevation of a workshop with nine build levels. Producers are hopper machines, factories have sawtooth roofs and chimneys, and sellers are market stalls. Horizontal conveyors have visible rollers and raised decks; vertical conveyors become lift shafts with animated carriers. Connected horizontal and vertical routes transfer elements between levels.
+The playground shows a side elevation of a workshop with nine build levels. Producers are materializer chambers, factories are fusion reactors, and sellers are holographic trading terminals. Horizontal conveyors have visible rollers and raised decks; vertical conveyors become lift shafts with animated carriers. Connected horizontal and vertical routes transfer elements between levels.
 
 The placement grid appears when building or removing blocks. This is a visual change: previous layouts, directions, recipes, inventories, money, and browser saves continue to work. Every conveyor still costs ◈ 10, including lifts. The page and workshop backgrounds remain white.
+
+
+## Anti-gravity factory
+
+All buildings sit on repulsor bases with cyan energy fields and animated levitation rings. Maglev conveyor decks replace support legs, and illuminated lift shafts move items between levels. Factory buildings are fusion reactors, producers hold their elements in stasis chambers, and sellers use holographic trade displays. Matching shop illustrations identify each building.
+
+The workshop displays an anti-gravity status indicator and the help guide explains the hover technology. A gentle, synchronized hover animation keeps connected transport aligned; it respects the browser's reduced-motion preference. Simulation pauses also freeze hover motion. The background remains white and existing saves remain compatible.
