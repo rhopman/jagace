@@ -20,7 +20,7 @@ npm run build
 
 The starter factory produces earth and fire, combines them into lava, and sells it. Choose blocks in the shop and click an empty grid tile to place them. Producers emit on the element's timer. Conveyors carry elements in their arrow direction. Factories collect both ingredients and emit the recipe output every two seconds while supplied. Sellers accept every element.
 
-Choose the recipe under Factory before placing it; building a factory unlocks its element's producer. More valuable elements cost more to produce. Explore recipes for all six combinations and ten elements.
+Choose the recipe under Factory before placing it; building a factory unlocks its element's producer. More valuable elements cost more to produce. Explore recipes for all twenty combinations and twenty-four elements.
 
 - **R**: rotate placement direction.
 - Click a placed block with nothing selected: rotate its output.
@@ -44,3 +44,29 @@ Progress automatically saves in local browser storage. Start fresh asks for conf
 The `Deploy J.A.G.A.C.E. to GitHub Pages` workflow tests and builds pushes to `main`, then deploys `dist` using GitHub Pages. Relative asset URLs also work under the `/jagace/` project path.
 
 In repository **Settings → Pages**, choose **GitHub Actions** as the build source. If Pages was enabled after the first run, rerun the workflow from **Actions**. The site will be available at https://rhopman.github.io/jagace/ after a successful deployment.
+
+
+## Element collection
+
+Every element has a distinct vector illustration shared by its producer, moving cargo, catalog, and recipe guide. Factories show chimneys, windows, and an output-element badge; sellers are market stalls, and conveyors have animated treads and rollers.
+
+New recipes include:
+
+| Ingredients | Output |
+| --- | --- |
+| Earth + Dust | Sand |
+| Clay + Water | Mud |
+| Water + Wind | Ice |
+| Steam + Wind | Cloud |
+| Cloud + Water | Rain |
+| Earth + Rain | Plant |
+| Plant + Earth | Wood |
+| Wood + Fire | Coal |
+| Stone + Fire | Metal |
+| Metal + Coal | Steel |
+| Glass + Stone | Crystal |
+| Fire + Wind | Energy |
+| Plant + Energy | Life |
+| Metal + Energy | Gold |
+
+Existing browser saves remain compatible and retain their factories, balance, and discoveries.
