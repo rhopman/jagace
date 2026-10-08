@@ -76,3 +76,9 @@ Existing browser saves remain compatible and retain their factories, balance, an
 Select **Conveyor belt**, then press and drag across empty grid tiles. A continuous belt is built along the stroke, and corners turn automatically. Drag into an existing belt, factory, or seller to join it and finish the stroke; existing buildings are preserved. Each new belt costs ◈ 10. Individual placement and R/click rotation still work.
 
 Conveyor graphics adapt to their actual incoming neighbors and output. Straight sections meet at tile edges, corners bend, and multiple incoming belts merge into the single arrow direction. Rotating or removing neighbors updates the visible connections immediately. Disconnected ends remain capped until connected.
+
+## Side view
+
+The playground shows a side elevation of a workshop with nine build levels. Producers are hopper machines, factories have sawtooth roofs and chimneys, and sellers are market stalls. Horizontal conveyors have visible rollers and raised decks; vertical conveyors become lift shafts with animated carriers. Connected horizontal and vertical routes transfer elements between levels.
+
+The placement grid appears when building or removing blocks. This is a visual change: previous layouts, directions, recipes, inventories, money, and browser saves continue to work. Every conveyor still costs ◈ 10, including lifts. The page and workshop backgrounds remain white.
