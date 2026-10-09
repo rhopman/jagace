@@ -1,4 +1,5 @@
-name: Deploy J.A.G.A.C.E. to GitHub Pages
+name: Auto-publish J.A.G.A.C.E. to GitHub Pages
+run-name: Auto-publish J.A.G.A.C.E. from ${{ github.sha }}
 
 on:
   push:
