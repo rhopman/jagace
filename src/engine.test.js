@@ -10,10 +10,10 @@ test('starter line earns money and discovers lava without requiring another purc
   assert.ok(s.unlocked.includes('lava'));assert.ok(s.crafted.lava>=DISCOVERY_BATCHES);
 });
 
-test('advanced factories require discovered ingredients and three successful batches unlock a producer',()=>{
+test('generic factories discover combinations from stock and unlock producers after three batches',()=>{
   const s=fresh();s.blocks={};s.money=2000;
-  assert.match(place(s,1,1,'factory','glass'),/ingredients/);
-  s.unlocked.push('dust');assert.equal(place(s,1,1,'factory','glass'),null);
+  assert.equal(place(s,1,1,'factory'),null);
+  assert.equal(s.blocks[key(1,1)].el,null);
   assert.ok(!s.unlocked.includes('glass'));
   assert.match(place(s,2,1,'producer','glass'),/Craft 3/);
   const b=s.blocks[key(1,1)];b.stock={dust:2,fire:2};
@@ -26,10 +26,30 @@ test('advanced factories require discovered ingredients and three successful bat
   assert.match(place(s,2,1,'belt'),/occupied/);
 });
 
-test('advanced factories cost more and take longer than basic recipes',()=>{
+test('generic factories have a fixed price while advanced combinations take longer',()=>{
   assert.equal(price('factory','lava'),180);
-  assert.ok(price('factory','steel')>price('factory','glass'));
+  assert.equal(price('factory','steel'),price('factory','glass'));
   assert.ok(factoryDuration('steel')>factoryDuration('lava'));
+});
+
+test('one factory can discover different combinations and retain unmatched ingredients',()=>{
+  const s=fresh();s.blocks={};s.particles=[];s.money=1000;
+  place(s,0,0,'factory');place(s,1,0,'seller');
+  const b=s.blocks[key(0,0)];b.stock={earth:1,fire:1,gold:1};
+  tick(s,2);assert.equal(s.crafted.lava,1);assert.equal(b.stock.gold,1);
+  b.stock.water=1;b.stock.wind=1;
+  tick(s,2);assert.equal(s.crafted.ice,1);assert.equal(b.stock.gold,1);
+  tick(s,10);assert.equal(s.crafted.lava,1);assert.equal(s.crafted.ice,1);
+});
+
+test('generic factories accept arbitrary inputs up to their storage limit',()=>{
+  const s=fresh();s.blocks={};s.particles=[];
+  place(s,0,0,'factory');
+  s.particles=[{x:-1,y:0,el:'gold',dir:0,progress:0}];
+  tick(s,1);assert.equal(s.blocks[key(0,0)].stock.gold,1);assert.equal(s.particles.length,0);
+  s.blocks[key(0,0)].stock.gold=20;
+  s.particles=[{x:-1,y:0,el:'gold',dir:0,progress:0}];
+  tick(s,1);assert.equal(s.blocks[key(0,0)].stock.gold,20);assert.equal(s.particles.length,1);
 });
 
 test('generic seller accepts basic elements and removal refunds the actual purchase price',()=>{

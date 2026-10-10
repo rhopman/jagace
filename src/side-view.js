@@ -176,7 +176,7 @@ export function createSideViewRenderer(ctx, sprites) {
       box(x+c*.15,y+c*.39,c*.18,c*.25,'#49647a',null,2);
       for(let i=0;i<3;i++)glowLine(x+c*.18,y+c*(.44+i*.065),x+c*.29,y+c*(.44+i*.065));
       box(x+c*.4,y+c*.38,c*.4,c*.33,'#f5fcfc','#8cbdca',3);
-      sprite(b.el,x+c*.46,y+c*.39,c*.27);
+      sprite('factory',x+c*.46,y+c*.39,c*.27);
       ctx.beginPath();ctx.ellipse(x+c*.6,y+c*.68,c*.16,c*.018,0,0,Math.PI*2);ctx.strokeStyle=cyan;ctx.stroke();
       arrow(x+c*.8,y+c*.77,b.dir,c*.045,'#5a859a');
     }else{
@@ -190,7 +190,7 @@ export function createSideViewRenderer(ctx, sprites) {
     }
     if(c>=34){
       ctx.font=`600 ${Math.max(6,c*.105)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#d6f5fa';
-      ctx.fillText(b.type==='seller'?'TRADE':e.name.toUpperCase(),x+c*.5,y+c*.91,c*.78);
+      ctx.fillText(b.type==='seller'?'TRADE':b.type==='factory'?'FUSION':e.name.toUpperCase(),x+c*.5,y+c*.91,c*.78);
     }
   }
   return {
