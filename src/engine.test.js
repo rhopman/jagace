@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {fresh,tick,place,remove,key,price,elements,recipes,STARTING_MONEY,DISCOVERY_BATCHES,factoryDuration,prepareState} from './engine.js';
+import {fresh,tick,place,remove,key,price,elements,recipes,STARTING_MONEY,DISCOVERY_BATCHES,factoryDuration,prepareState,factoryRecipe} from './engine.js';
 
 test('starter line earns money and discovers lava without requiring another purchase',()=>{
   const s=fresh();assert.equal(s.money,500);assert.ok(!s.unlocked.includes('lava'));
@@ -85,6 +85,16 @@ test('every advanced element remains reachable from the four starting elements',
 });
 
 for(const [output,inputs] of Object.entries(recipes)){
+  if(inputs.length===3)test(`${output}: waits for the third ingredient and consumes exactly one of each`,()=>{
+    const s=fresh();s.blocks={};s.particles=[];
+    place(s,0,0,'factory');const b=s.blocks[key(0,0)];
+    b.stock={[inputs[0]]:2,[inputs[1]]:2};
+    tick(s,20);assert.equal(s.particles.length,0);assert.deepEqual(s.crafted,{});
+    b.stock[inputs[2]]=1;
+    tick(s,.05);assert.equal(s.particles.length,1);assert.equal(s.particles[0].el,output);
+    assert.equal(b.stock[inputs[0]],1);assert.equal(b.stock[inputs[1]],1);assert.equal(b.stock[inputs[2]],0);
+    tick(s,20);assert.equal(s.crafted[output],1);
+  });
   test(`${output}: process ingredients, discover after batches, sell output, and buy its producer`,()=>{
     const s=fresh();s.money=100000;s.blocks={};s.particles=[];
     s.unlocked=[...new Set(['earth','wind','fire','water',...inputs])];
@@ -92,6 +102,7 @@ for(const [output,inputs] of Object.entries(recipes)){
     assert.match(place(s,0,0,'producer',output),/Craft/);
     place(s,3,3,'producer',inputs[0],0);place(s,4,3,'belt',null,0);
     place(s,5,5,'producer',inputs[1],3);place(s,5,4,'belt',null,3);place(s,6,3,'seller');
+    if(inputs.length===3){place(s,5,1,'producer',inputs[2],1);place(s,5,2,'belt',null,1);}
     for(let i=0;i<1600;i++)tick(s,.05);
     assert.ok(s.sold>=3,`Expected sales of ${output}, got ${s.sold}`);
     assert.equal(s.earned,s.sold*elements[output].value);
@@ -101,3 +112,7 @@ for(const [output,inputs] of Object.entries(recipes)){
     assert.ok(elements[output].cost>Math.max(...inputs.map(id=>elements[id].cost)));
   });
 }
+
+test('completed three-ingredient combinations take priority over available pairs',()=>{
+  assert.equal(factoryRecipe({stock:{earth:1,clay:1,sand:1,fire:1}}),'brick');
+});

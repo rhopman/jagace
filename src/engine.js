@@ -14,6 +14,14 @@ Object.assign(elements, {
   energy: {name:'Energy',icon:'ϟ',color:'#d5b34c',bg:'#f4edce',value:28,cost:350,interval:5},
   life: {name:'Life',icon:'♡',color:'#c18b80',bg:'#f1ded7',value:240,cost:3000,interval:11},
   gold: {name:'Gold',icon:'▱',color:'#c3a044',bg:'#f0e6c2',value:180,cost:2250,interval:10},
+  brick: {name:'Brick',icon:'#',color:'#bd6b63',bg:'#f3dddd',value:75,cost:900,interval:8},
+  cement: {name:'Cement',icon:'#',color:'#8a9490',bg:'#e4e9e5',value:115,cost:1450,interval:9},
+  alloy: {name:'Alloy',icon:'#',color:'#a88b61',bg:'#ece4d7',value:480,cost:6500,interval:13},
+  battery: {name:'Battery',icon:'+',color:'#65a982',bg:'#deeee4',value:520,cost:7000,interval:13},
+  magnet: {name:'Magnet',icon:'U',color:'#c16c77',bg:'#f1dfe4',value:680,cost:9000,interval:14},
+  fertilizer: {name:'Fertilizer',icon:'*',color:'#7c9d52',bg:'#e6edd9',value:300,cost:3800,interval:11},
+  computer: {name:'Computer',icon:'#',color:'#658ea6',bg:'#dfebf2',value:1100,cost:14500,interval:16},
+  robot: {name:'Robot',icon:'#',color:'#8698ac',bg:'#e5eaf1',value:1850,cost:25000,interval:18},
 });
 export const recipes={
   lava:['earth','fire'], steam:['water','fire'], dust:['earth','wind'],
@@ -23,6 +31,10 @@ export const recipes={
   wood:['plant','earth'], coal:['wood','fire'], metal:['stone','fire'],
   steel:['metal','coal'], crystal:['glass','stone'], energy:['fire','wind'],
   life:['plant','energy'], gold:['metal','energy'],
+  brick:['clay','sand','fire'], cement:['stone','clay','sand'],
+  alloy:['metal','gold','fire'], battery:['metal','crystal','water'],
+  magnet:['steel','stone','wind'], fertilizer:['plant','mud','dust'],
+  computer:['steel','glass','energy'], robot:['alloy','battery','life'],
 };
 export const STARTING_MONEY=500;
 export const DISCOVERY_BATCHES=3;
@@ -31,7 +43,7 @@ export function elementTier(el){
   if(tiers[el])return tiers[el];
   return tiers[el]=recipes[el]?1+Math.max(...recipes[el].map(elementTier)):0;
 }
-export function factoryDuration(el){return 2+.6*Math.max(0,elementTier(el)-1);}
+export function factoryDuration(el){return 2+.6*Math.max(0,elementTier(el)-1)+Math.max(0,(recipes[el]?.length||2)-2);}
 export function missingIngredients(s,el){return (recipes[el]||[]).filter(input=>!s.unlocked.includes(input));}
 export const MAX_PRODUCER_LEVEL=6;
 export function producerLevel(block){return Number.isInteger(block?.level)?Math.max(1,Math.min(MAX_PRODUCER_LEVEL,block.level)):1;}
@@ -52,7 +64,7 @@ export function upgradeProducer(s,x,y){
   return null;
 }
 export function prepareState(s){s.crafted??={};for(const b of Object.values(s.blocks)){if(b.type==='factory'){if(b.paid===undefined)b.paid=150;b.el=null;}}return s;}
-export function factoryRecipe(block){return Object.keys(recipes).find(el=>recipes[el].every(input=>(block.stock[input]||0)>0))||null;}
+export function factoryRecipe(block){return Object.keys(recipes).filter(el=>recipes[el].every(input=>(block.stock[input]||0)>0)).sort((a,b)=>recipes[b].length-recipes[a].length)[0]||null;}
 export const dirs=[[1,0],[0,1],[-1,0],[0,-1]];
 export const key=(x,y)=>`${x},${y}`;
 export function fresh(){let s={money:STARTING_MONEY,earned:0,sold:0,crafted:{},unlocked:['earth','wind','fire','water'],blocks:{},particles:[],clock:0};const add=(x,y,type,el,dir=0)=>s.blocks[key(x,y)]={x,y,type,el,dir,timer:0,stock:{},paid:price(type,el),level:1};add(2,3,'producer','earth');add(3,3,'belt');add(4,3,'belt');add(5,3,'factory',null);add(5,6,'producer','fire',3);add(5,5,'belt',null,3);add(5,4,'belt',null,3);add(6,3,'belt');add(7,3,'belt');add(8,3,'seller');return s;}
