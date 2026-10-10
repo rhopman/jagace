@@ -1,7 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fresh, place, key, tick, remove } from './engine.js';
-import { conveyorConnections, extendConveyor } from './conveyors.js';
+import { conveyorConnections, extendConveyor, machineConnections } from './conveyors.js';
+
+test('machine bridges follow incoming and outgoing transport, including direct connections',()=>{
+  const s=empty();place(s,0,0,'producer','earth');place(s,1,0,'factory','lava');place(s,2,0,'seller');place(s,1,1,'belt',null,3);
+  assert.deepEqual(machineConnections(s,s.blocks[key(0,0)]),[{side:0,incoming:false}]);
+  assert.deepEqual(machineConnections(s,s.blocks[key(1,0)]),[{side:0,incoming:false},{side:1,incoming:true},{side:2,incoming:true}]);
+  assert.deepEqual(machineConnections(s,s.blocks[key(2,0)]),[{side:2,incoming:true}]);
+  s.blocks[key(1,1)].dir=1;
+  assert.equal(machineConnections(s,s.blocks[key(1,0)]).some(p=>p.side===1),false);
+});
 
 function empty(){const s=fresh();s.blocks={};s.money=1000;return s;}
 

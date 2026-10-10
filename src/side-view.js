@@ -1,4 +1,4 @@
-import { conveyorConnections } from './conveyors.js';
+import { conveyorConnections, machineConnections } from './conveyors.js';
 import { elements, dirs,productionInterval,producerLevel } from './engine.js';
 
 // Side elevation renderer: tile positions remain the logical transport grid.
@@ -126,6 +126,27 @@ export function createSideViewRenderer(ctx, sprites) {
   function drawMachine(state,b,v){
     const c=v.cell,x=v.ox+b.x*c,y=v.oy+b.y*c,e=elements[b.el];
     platform(x,y,c,state.clock);
+    for(const {side,incoming} of machineConnections(state,b)){
+      if(side%2===0){
+        const left=side===2?0:.74,right=side===2?.26:1;
+        box(x+c*left,y+c*.61,c*(right-left),c*.18,alloy,edge,1);
+        box(x+c*left,y+c*.6,c*(right-left),c*.045,'#a9e5eb',null,1);
+        for(let i=0;i<3;i++){
+          const rx=x+c*(left+(i+.5)*(right-left)/3);
+          ctx.beginPath();ctx.arc(rx,y+c*.71,c*.035,0,Math.PI*2);ctx.fillStyle='#d2e5ee';ctx.fill();
+        }
+        glowLine(x+c*left,y+c*.795,x+c*right,y+c*.795);
+        arrow(x+c*(left+right)/2,y+c*.71,incoming?(side+2)%4:side,c*.035,'#c4f4f4');
+      }else{
+        const top=side===3?0:.72,bottom=side===3?.33:1;
+        box(x+c*.37,y+c*top,c*.26,c*(bottom-top),'#e9f8fa',null,0);
+        for(const px of [.37,.63]){
+          line(x+c*px,y+c*top,x+c*px,y+c*bottom,edge,c*.035);
+          glowLine(x+c*px,y+c*top,x+c*px,y+c*bottom);
+        }
+        arrow(x+c*.5,y+c*(top+bottom)/2,incoming?(side+2)%4:side,c*.055,'#52a6b7');
+      }
+    }
     if(b.type==='producer'){
       // A materializer chamber holds the recognizable element in a stasis field.
       box(x+c*.17,y+c*.18,c*.66,c*.65,'#eaf0f5',edge,4);
@@ -143,8 +164,9 @@ export function createSideViewRenderer(ctx, sprites) {
         ctx.fillText('L'+producerLevel(b),x+c*.72,y+c*.175);
       }
       const [dx,dy]=dirs[b.dir];
-      line(x+c*.5+dx*c*.29,y+c*.5+dy*c*.29,x+c*.5+dx*c*.46,y+c*.5+dy*c*.46,alloy,c*.075);
-      arrow(x+c*.5+dx*c*.39,y+c*.5+dy*c*.39,b.dir,c*.04,'#aaf0f3');
+      const portY=b.dir%2? .5:.69;
+      line(x+c*.5+dx*c*.29,y+c*portY+dy*c*.29,x+c*.5+dx*c*.46,y+c*portY+dy*c*.46,alloy,c*.075);
+      arrow(x+c*.5+dx*c*.39,y+c*portY+dy*c*.39,b.dir,c*.04,'#aaf0f3');
     }else if(b.type==='factory'){
       // A fusion reactor replaces the smokestack: energy goes into combining elements.
       box(x+c*.08,y+c*.3,c*.84,c*.53,'#dce8ef',edge,4);

@@ -1,5 +1,18 @@
 import { dirs, key, place } from './engine.js';
 
+export function machineConnections(state, machine) {
+  const ports = [];
+  for (let side = 0; side < 4; side++) {
+    const [dx, dy] = dirs[side];
+    const neighbor = state.blocks[key(machine.x + dx, machine.y + dy)];
+    if (!neighbor) continue;
+    const incoming = machine.type !== 'producer' && neighbor.type !== 'seller' && neighbor.dir === (side + 2) % 4;
+    const outgoing = machine.type !== 'seller' && machine.dir === side && ['belt', 'factory', 'seller'].includes(neighbor.type);
+    if (incoming || outgoing) ports.push({ side, incoming });
+  }
+  return ports;
+}
+
 // Only show ports that carry items: incoming outputs and the belt's chosen exit.
 export function conveyorConnections(state, belt) {
   const inputs = [];
