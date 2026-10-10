@@ -1,5 +1,6 @@
 // Shared vector illustrations keep the shop, buildings and moving cargo consistent.
 const art = {
+  fan: '<rect x="8" y="35" width="48" height="21" rx="4" fill="#68745e"/><circle cx="32" cy="43" r="15" fill="#d3dcc7"/><path d="M32 29v28m-14-14h28m-24-10 20 20m0-20L22 53" stroke="#91a37c" stroke-width="4"/><circle cx="32" cy="43" r="4" fill="#637456"/><path d="M18 24V9m-4 5 4-5 4 5m10 9V5m-4 5 4-5 4 5m10 19V9m-4 5 4-5 4 5" stroke="#91a37c" stroke-width="2"/>',
   brick: '<path fill="#c47668" d="m5 26 34-12 20 12v23L25 60 5 48Z"/><path fill="#e7a18a" d="m5 26 34-12 20 12-34 12Z"/><path d="m25 38 34-12M25 38v22m-20-34 20 12m12-17 18 11" stroke="#9f594f"/>',
   cement: '<path fill="#c3cbc5" d="M15 8h34l5 48H10Z"/><path fill="#91a299" d="M15 8h34v8H15Z"/><rect x="18" y="26" width="28" height="18" rx="2" fill="#edf1e9"/><path d="m23 39 8-10 10 10Z" fill="#98a89f"/><path d="M18 50h28" stroke="#82968b"/>',
   alloy: '<path fill="#9aabc1" d="m6 32 15-18h29l9 19-16 18H17Z"/><path fill="#dfbd7d" d="m6 32 15-18h29l-9 21Z"/><path d="m6 32 35 3 18-2M41 35l2 16" stroke="#7c8794"/><path d="m22 25 13-4m-7 22 9-1" stroke="#f3dca4" stroke-width="3"/>',

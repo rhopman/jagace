@@ -12,7 +12,7 @@ test('cargo travels forward over machine bridges and follows rotated outputs',()
   s.blocks[key(1,0)].dir=1;place(s,1,1,'seller');p.progress=.5;
   assert.deepEqual(cargoPosition(s,p),{x:1.5,y:1.1});
   remove(s,1,1);
-  assert.deepEqual(cargoPosition(s,p),{x:1.5,y:.6});
+  assert.deepEqual(cargoPosition(s,p),{x:1.5,y:1.1});
 });
 
 test('machine bridges follow incoming and outgoing transport, including direct connections',()=>{
@@ -60,10 +60,10 @@ test('drag connects an existing seller without purchasing or overwriting it',()=
 });
 
 test('failed purchases and obstacles leave the preceding belt direction intact',()=>{
-  const s=empty();place(s,1,1,'belt',null,3);s.money=0;
+  const s=empty();place(s,1,1,'belt',null,2);s.money=0;
   assert.match(extendConveyor(s,{x:1,y:1},{x:2,y:1}).error,/money/);
-  assert.equal(s.blocks[key(1,1)].dir,3);assert.equal(s.blocks[key(2,1)],undefined);
+  assert.equal(s.blocks[key(1,1)].dir,2);assert.equal(s.blocks[key(2,1)],undefined);
   s.money=100;place(s,2,1,'producer','earth');
   assert.match(extendConveyor(s,{x:1,y:1},{x:2,y:1}).error,/producer/);
-  assert.equal(s.blocks[key(1,1)].dir,3);
+  assert.equal(s.blocks[key(1,1)].dir,2);
 });

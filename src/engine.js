@@ -63,14 +63,36 @@ export function upgradeProducer(s,x,y){
   b.timer=progress*productionInterval(b);
   return null;
 }
-export function prepareState(s){s.crafted??={};for(const b of Object.values(s.blocks)){if(b.type==='factory'){if(b.paid===undefined)b.paid=150;b.el=null;}}return s;}
+export function prepareState(s){s.crafted??={};if(s.transportVersion!==2){for(const [id,b]of Object.entries(s.blocks)){if(b.type==='belt'&&b.dir===3)b.type='fan';else if(b.type==='belt'&&b.dir===1){s.money+=b.paid??10;delete s.blocks[id];}}s.transportVersion=2;}for(const b of Object.values(s.blocks)){if(b.type==='factory'){if(b.paid===undefined)b.paid=150;b.el=null;}}return s;}
 export function factoryRecipe(block){return Object.keys(recipes).filter(el=>recipes[el].every(input=>(block.stock[input]||0)>0)).sort((a,b)=>recipes[b].length-recipes[a].length)[0]||null;}
 export const dirs=[[1,0],[0,1],[-1,0],[0,-1]];
 export const key=(x,y)=>`${x},${y}`;
-export function fresh(){let s={money:STARTING_MONEY,earned:0,sold:0,crafted:{},unlocked:['earth','wind','fire','water'],blocks:{},particles:[],clock:0};const add=(x,y,type,el,dir=0)=>s.blocks[key(x,y)]={x,y,type,el,dir,timer:0,stock:{},paid:price(type,el),level:1};add(2,3,'producer','earth');add(3,3,'belt');add(4,3,'belt');add(5,3,'factory',null);add(5,6,'producer','fire',3);add(5,5,'belt',null,3);add(5,4,'belt',null,3);add(6,3,'belt');add(7,3,'belt');add(8,3,'seller');return s;}
-export function price(type,el){return type==='producer'?elements[el].cost:type==='factory'?180:type==='seller'?100:10;}
-export function place(s,x,y,type,el,dir=0){if(s.blocks[key(x,y)])return 'This tile is already occupied.';if(type==='producer'&&!s.unlocked.includes(el))return `Craft ${DISCOVERY_BATCHES} batches in a factory to unlock this producer.`;const cost=price(type,el);if(s.money<cost)return 'Not enough money. Let your factory earn a little more.';s.money-=cost;s.blocks[key(x,y)]={x,y,type,el:type==='factory'?null:el,dir,timer:0,stock:{},paid:cost,level:1};return null;}
+export function fresh(){let s={money:STARTING_MONEY,earned:0,sold:0,crafted:{},unlocked:['earth','wind','fire','water'],blocks:{},particles:[],clock:0};const add=(x,y,type,el,dir=0)=>s.blocks[key(x,y)]={x,y,type,el,dir,timer:0,stock:{},paid:price(type,el),level:1};add(2,3,'producer','earth');add(3,3,'belt');add(4,3,'belt');add(5,3,'factory',null);add(5,6,'producer','fire',3);add(5,5,'fan',null,3);add(5,4,'fan',null,3);add(6,3,'belt');add(7,3,'belt');add(8,3,'seller');s.transportVersion=2;return s;}
+export function price(type,el){return type==='producer'?elements[el].cost:type==='factory'?180:type==='seller'?100:type==='fan'?40:10;}
+export function place(s,x,y,type,el,dir=0){if(s.blocks[key(x,y)])return 'This tile is already occupied.';if(type==='belt'&&dir===3)type='fan';if(type==='producer'&&!s.unlocked.includes(el))return `Craft ${DISCOVERY_BATCHES} batches in a factory to unlock this producer.`;const cost=price(type,el);if(s.money<cost)return 'Not enough money. Let your factory earn a little more.';s.money-=cost;s.blocks[key(x,y)]={x,y,type,el:type==='factory'?null:el,dir:type==='fan'?3:dir,timer:0,stock:{},paid:cost,level:1};return null;}
 export function remove(s,x,y){let b=s.blocks[key(x,y)];if(!b)return false;s.money+=Math.floor(((b.paid??(b.type==='factory'?150:price(b.type,b.el)))+(b.upgradeSpent||0))*.5);delete s.blocks[key(x,y)];return true;}
 function output(s,b,el){if(s.particles.filter(p=>p.x===b.x&&p.y===b.y).length>=4)return false;s.particles.push({x:b.x,y:b.y,fromX:b.x,fromY:b.y,el,progress:0,dir:b.dir});return true;}
 export function tick(s,dt){prepareState(s);s.clock+=dt;for(const b of Object.values(s.blocks)){b.timer+=dt;if(b.type==='producer'&&b.timer>=productionInterval(b)){if(output(s,b,b.el))b.timer=0;}if(b.type==='factory'){const result=factoryRecipe(b);if(result&&b.timer>=factoryDuration(result)&&output(s,b,result)){recipes[result].forEach(el=>b.stock[el]--);b.timer=0;s.crafted[result]=(s.crafted[result]||0)+1;if(s.crafted[result]>=DISCOVERY_BATCHES&&!s.unlocked.includes(result))s.unlocked.push(result);}}}
-const alive=[];for(const p of s.particles){p.progress+=dt*1.7;if(p.progress<1){alive.push(p);continue;}const b=s.blocks[key(p.x,p.y)];const dir=b?.dir??p.dir;const [dx,dy]=dirs[dir];const nx=p.x+dx,ny=p.y+dy;const dest=s.blocks[key(nx,ny)];if(dest?.type==='seller'){s.money+=elements[p.el].value;s.earned+=elements[p.el].value;s.sold++;continue;}if(dest?.type==='factory'&&(dest.stock[p.el]||0)<20){dest.stock[p.el]=(dest.stock[p.el]||0)+1;continue;}if(dest?.type==='belt'&&!s.particles.some(q=>q!==p&&q.x===nx&&q.y===ny)){p.fromX=p.x;p.fromY=p.y;p.x=nx;p.y=ny;p.dir=dest.dir;p.progress=0;}else p.progress=1;alive.push(p);}s.particles=alive;}
+const alive=[];for(const p of s.particles){
+  p.progress+=dt*(p.airborne?2.5:1.7);
+  if(p.progress<1){alive.push(p);continue;}
+  const step=transportStep(s,p);
+  if(!step){p.progress=1;alive.push(p);continue;}
+  const {nx,ny,dest,dir}=step;
+  if(nx<0||nx>=12||ny<0||ny>=9)continue;
+  if(dest?.type==='seller'){s.money+=elements[p.el].value;s.earned+=elements[p.el].value;s.sold++;continue;}
+  if(dest?.type==='factory'&&(dest.stock[p.el]||0)<20){dest.stock[p.el]=(dest.stock[p.el]||0)+1;continue;}
+  if((!dest||['belt','fan'].includes(dest.type))&&!s.particles.some(q=>q!==p&&q.x===nx&&q.y===ny)){
+    p.fromX=p.x;p.fromY=p.y;p.x=nx;p.y=ny;p.dir=dest?.type==='fan'?3:dest?.dir??dir;p.airborne=!dest;p.progress=0;
+  }else p.progress=1;
+  alive.push(p);
+}s.particles=alive;}
+export function transportStep(s,p){
+  const b=s.blocks[key(p.x,p.y)];
+  let dir=b?.type==='fan'?3:b?.dir??(p.airborne?(p.dir===3?3:1):p.dir);
+  let [dx,dy]=dirs[dir],nx=p.x+dx,ny=p.y+dy,dest=s.blocks[key(nx,ny)];
+  if(dir===3&&b&&b.type!=='fan'&&dest?.type!=='fan'){
+    dir=1;[dx,dy]=dirs[dir];nx=p.x+dx;ny=p.y+dy;dest=s.blocks[key(nx,ny)];
+  }
+  return {nx,ny,dest,dir};
+}

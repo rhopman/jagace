@@ -44,39 +44,13 @@ export function createSideViewRenderer(ctx, sprites) {
     const reach=side=>inputs.includes(side)||(side===output&&outputConnected)? .5:.32;
     let left=ports.has(2)? .5-reach(2):.5;
     let right=ports.has(0)? .5+reach(0):.5;
-    const hasHorizontal=ports.has(0)||ports.has(2);
+    const hasHorizontal=true;
+    if(left===right){left=.18;right=.82;}
     const hasVertical=ports.has(1)||ports.has(3);
     const transfer=hasVertical&&hasHorizontal;
     if(transfer){
       // The belt runs through the full lift bay, not just to its center.
       left=Math.min(left,.33);right=Math.max(right,.67);
-    }
-    if(hasVertical){
-      const top=ports.has(3)? .5-reach(3):transfer?.36:.5;
-      const bottom=ports.has(1)? .5+reach(1):transfer?.81:.69;
-      // Transparent lift shaft, guide rails, and moving carrier shelves.
-      const railLeft=.37,railRight=.63;
-      box(x+c*railLeft,y+c*top,c*(railRight-railLeft),c*(bottom-top),'#f0f2ed',null,0);
-      for(const px of [railLeft,railRight]){
-        if(transfer){
-          // Open the guide rails at belt height so items have a clear doorway.
-          if(top<.59)line(x+c*px,y+c*top,x+c*px,y+c*.59,'#7e9cab',Math.max(1,c*.045));
-          if(bottom>.8)line(x+c*px,y+c*.8,x+c*px,y+c*bottom,'#7e9cab',Math.max(1,c*.045));
-        }else line(x+c*px,y+c*top,x+c*px,y+c*bottom,'#7e9cab',Math.max(1,c*.045));
-      }
-      const verticalDirection=output%2?output:inputs.includes(3)?1:3;
-      const direction=verticalDirection===1?1:-1;
-      const phase=(state.clock*.5)%1;
-      ctx.save();ctx.beginPath();ctx.rect(x+c*.38,y+c*top,c*.24,c*(bottom-top));ctx.clip();
-      for(let i=-1;i<5;i++){
-        const level=top+(i+(direction===1?phase:1-phase))*.22;
-        box(x+c*.4,y+c*level,c*.2,c*.035,'#a5afa0',null,0);
-      }
-      ctx.restore();
-      glowLine(x+c*.385,y+c*top,x+c*.385,y+c*bottom,Math.max(1,c*.016));
-      glowLine(x+c*.615,y+c*top,x+c*.615,y+c*bottom,Math.max(1,c*.016));
-      const arrowY=transfer?(ports.has(3)?Math.max(top+.1,.43):Math.min(bottom-.08,.88)):(top+bottom)/2;
-      arrow(x+c*.5,y+c*arrowY,verticalDirection,c*.07,'#52a6b7');
     }
     if(hasHorizontal){
       const length=(right-left)*c;
@@ -102,19 +76,21 @@ export function createSideViewRenderer(ctx, sprites) {
       glowLine(x+c*left,y+c*.795,x+c*right,y+c*.795,Math.max(1,c*.018));
       if(output%2===0)arrow(x+c*.5,y+c*.72,output,c*.06,'#e9eddf');
     }
-    if(transfer){
-      // Flush loading deck with inset rollers and a small protective canopy.
-      line(x+c*.33,y+c*.6,x+c*.67,y+c*.6,'#cbd3bf',Math.max(1,c*.03));
-      for(const px of [.39,.5,.61]){
-        ctx.beginPath();ctx.arc(x+c*px,y+c*.71,c*.038,0,Math.PI*2);
-        ctx.fillStyle='#dfe4d8';ctx.fill();
-        const angle=state.clock*3*(output===2?-1:1);
-        line(x+c*px,y+c*.71,x+c*px+Math.cos(angle)*c*.022,y+c*.71+Math.sin(angle)*c*.022,'#64889e');
-      }
-      line(x+c*.3,y+c*.35,x+c*.7,y+c*.35,'#9ba79a',Math.max(1,c*.035));
-      // Side brackets make the shaft and conveyor read as a single assembly.
-      for(const px of [.32,.64])box(x+c*px,y+c*.79,c*.04,c*.06,'#9ba79a',null,0);
+  }
+
+  function drawFan(state,b,v){
+    const c=v.cell,x=v.ox+b.x*c,y=v.oy+b.y*c;
+    box(x+c*.14,y+c*.58,c*.72,c*.24,alloy,edge,3);
+    ctx.save();ctx.translate(x+c*.5,y+c*.66);ctx.rotate(state.clock*5);
+    for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);box(c*.02,-c*.04,c*.23,c*.08,'#c8d1c0',null,2);}
+    ctx.restore();
+    ctx.beginPath();ctx.arc(x+c*.5,y+c*.66,c*.045,0,Math.PI*2);ctx.fillStyle='#e2e7da';ctx.fill();
+    for(let i=0;i<3;i++){
+      const px=x+c*(.32+i*.18),rise=(state.clock*.9+i*.23)%1;
+      line(px,y+c*(.48-rise*.45),px,y+c*(.37-rise*.45),'#a9bd9988',1.5);
     }
+    arrow(x+c*.5,y+c*.32,3,c*.07,'#849b6b');
+    repulsor(x+c*.5,y+c*.86,c,state.clock);
   }
   function drawMachine(state,b,v){
     const c=v.cell,x=v.ox+b.x*c,y=v.oy+b.y*c,e=elements[b.el];
@@ -130,16 +106,9 @@ export function createSideViewRenderer(ctx, sprites) {
         }
         glowLine(x+c*left,y+c*.795,x+c*right,y+c*.795);
         arrow(x+c*(left+right)/2,y+c*.71,incoming?(side+2)%4:side,c*.035,'#e9eddf');
-      }else{
-        const top=side===3?0:.72,bottom=side===3?.33:1;
-        box(x+c*.37,y+c*top,c*.26,c*(bottom-top),'#f0f2ed',null,0);
-        for(const px of [.37,.63]){
-          line(x+c*px,y+c*top,x+c*px,y+c*bottom,edge,c*.035);
-          glowLine(x+c*px,y+c*top,x+c*px,y+c*bottom);
-        }
-        arrow(x+c*.5,y+c*(top+bottom)/2,incoming?(side+2)%4:side,c*.055,'#52a6b7');
       }
     }
+
     if(b.type==='producer'){
       // A glazed machine housing keeps the produced material visible.
       box(x+c*.17,y+c*.18,c*.66,c*.65,'#eff1eb',edge,4);
@@ -190,7 +159,7 @@ export function createSideViewRenderer(ctx, sprites) {
     }
   }
   return {
-    drawBlock(state,b,v,ghost=false){ctx.save();ctx.translate(0,v.reducedMotion?0:Math.sin(state.clock*1.4)*Math.min(1.2,v.cell*.008));ctx.globalAlpha=ghost?.45:1;if(b.type==='belt')drawConveyor(state,b,v);else drawMachine(state,b,v);ctx.restore();},
+    drawBlock(state,b,v,ghost=false){ctx.save();ctx.translate(0,v.reducedMotion?0:Math.sin(state.clock*1.4)*Math.min(1.2,v.cell*.008));ctx.globalAlpha=ghost?.45:1;if(b.type==='belt')drawConveyor(state,b,v);else if(b.type==='fan')drawFan(state,b,v);else drawMachine(state,b,v);ctx.restore();},
     drawBackdrop(v,showGrid){
       const {ox,oy,cell:c,cols,rows}=v;
       ctx.save();
