@@ -17,27 +17,20 @@ export function createSideViewRenderer(ctx, sprites) {
     ctx.save();ctx.translate(x,y);ctx.rotate(dir*Math.PI/2);
     line(-size,0,size,0,color,1.2);line(size-3,-3,size,0,color,1.2);line(size-3,3,size,0,color,1.2);ctx.restore();
   }
-  const alloy='#536b80',edge='#8ca4b6',cyan='#48c7d5';
+  const alloy='#626b68',edge='#a2aba3',cyan='#93aa76';
   function glowLine(x1,y1,x2,y2,width=1){
-    ctx.save();ctx.shadowColor=cyan;ctx.shadowBlur=5;
+    ctx.save();
     line(x1,y1,x2,y2,cyan,width);ctx.restore();
   }
   function repulsor(cx,y,c,time,spread=.14){
-    const pulse=.85+Math.sin(time*2)*.15;
-    const field=ctx.createLinearGradient(cx,y,cx,y+c*.25);
-    field.addColorStop(0,'#58d5df66');field.addColorStop(1,'#58d5df00');
-    ctx.beginPath();ctx.moveTo(cx-c*spread*.45,y);ctx.lineTo(cx+c*spread*.45,y);
-    ctx.lineTo(cx+c*spread,y+c*.25);ctx.lineTo(cx-c*spread,y+c*.25);ctx.closePath();ctx.fillStyle=field;ctx.fill();
-    ctx.save();ctx.shadowColor=cyan;ctx.shadowBlur=4;
-    for(let i=0;i<2;i++){
-      ctx.beginPath();ctx.ellipse(cx,y+c*(.085+i*.09),c*spread*(.6+i*.25)*pulse,c*.018,0,0,Math.PI*2);
-      ctx.strokeStyle=i?'#79d8df66':'#43c5d5aa';ctx.lineWidth=1;ctx.stroke();
-    }
-    box(cx-c*.055,y-c*.035,c*.11,c*.035,'#b8f6f5',null,1);ctx.restore();
+    box(cx-c*.07,y-c*.035,c*.14,c*.055,'#737c75','#aab4aa',1);
+    line(cx-c*.045,y+c*.035,cx+c*.045,y+c*.035,'#a6bd9988',1);
+    ctx.beginPath();ctx.ellipse(cx,y+c*.09,c*spread*.7,c*.015,0,0,Math.PI*2);
+    ctx.fillStyle='#84928022';ctx.fill();
   }
   function platform(x,y,c,time){
     box(x+c*.04,y+c*.86,c*.92,c*.095,alloy,'#8199ac',3);
-    glowLine(x+c*.12,y+c*.87,x+c*.88,y+c*.87,Math.max(1,c*.025));
+    glowLine(x+c*.12,y+c*.87,x+c*.88,y+c*.87,Math.max(1,c*.008));
     for(const px of [.25,.75]){
       box(x+c*(px-.075),y+c*.925,c*.15,c*.055,'#3d5369',null,1);
       repulsor(x+c*px,y+c*.98,c,time);
@@ -63,7 +56,7 @@ export function createSideViewRenderer(ctx, sprites) {
       const bottom=ports.has(1)? .5+reach(1):transfer?.81:.69;
       // Transparent lift shaft, guide rails, and moving carrier shelves.
       const railLeft=.37,railRight=.63;
-      box(x+c*railLeft,y+c*top,c*(railRight-railLeft),c*(bottom-top),'#e9f8fa',null,0);
+      box(x+c*railLeft,y+c*top,c*(railRight-railLeft),c*(bottom-top),'#f0f2ed',null,0);
       for(const px of [railLeft,railRight]){
         if(transfer){
           // Open the guide rails at belt height so items have a clear doorway.
@@ -77,7 +70,7 @@ export function createSideViewRenderer(ctx, sprites) {
       ctx.save();ctx.beginPath();ctx.rect(x+c*.38,y+c*top,c*.24,c*(bottom-top));ctx.clip();
       for(let i=-1;i<5;i++){
         const level=top+(i+(direction===1?phase:1-phase))*.22;
-        box(x+c*.4,y+c*level,c*.2,c*.035,'#69cbd5',null,0);
+        box(x+c*.4,y+c*level,c*.2,c*.035,'#a5afa0',null,0);
       }
       ctx.restore();
       glowLine(x+c*.385,y+c*top,x+c*.385,y+c*bottom,Math.max(1,c*.016));
@@ -88,12 +81,12 @@ export function createSideViewRenderer(ctx, sprites) {
     if(hasHorizontal){
       const length=(right-left)*c;
       // The narrow deck and exposed circular rollers read as a side-on belt.
-      box(x+c*left,y+c*.61,length,c*.18,'#526b80','#819cae',transfer?1:c*.035);
-      box(x+c*left,y+c*.6,length,c*.045,'#a9e5eb',null,1);
+      box(x+c*left,y+c*.61,length,c*.18,'#626b68','#a0aaa2',transfer?1:c*.035);
+      box(x+c*left,y+c*.6,length,c*.045,'#bcc4b5',null,1);
       const count=Math.max(2,Math.round(length/(c*.16)));
       for(let i=0;i<count;i++){
         const rx=x+c*left+(i+.5)*length/count,ry=y+c*.71;
-        ctx.beginPath();ctx.arc(rx,ry,c*.045,0,Math.PI*2);ctx.fillStyle='#d2e5ee';ctx.fill();
+        ctx.beginPath();ctx.arc(rx,ry,c*.045,0,Math.PI*2);ctx.fillStyle='#d5dad0';ctx.fill();
         const a=state.clock*3*(output===2?-1:1);
         line(rx,ry,rx+Math.cos(a)*c*.026,ry+Math.sin(a)*c*.026,'#648397');
       }
@@ -101,26 +94,26 @@ export function createSideViewRenderer(ctx, sprites) {
       ctx.save();ctx.beginPath();ctx.rect(x+c*left,y+c*.6,length,c*.05);ctx.clip();
       for(let i=-1;i<8;i++){
         const tx=x+c*left+(i+(travel===1?phase:1-phase))*c*.15;
-        line(tx,y+c*.6,tx,y+c*.645,'#54aebc',1);
+        line(tx,y+c*.6,tx,y+c*.645,'#8b9780',1);
       }
       ctx.restore();
       const hoverX=x+c*(left+right)/2;
       repulsor(hoverX,y+c*.82,c,state.clock,.13);
       glowLine(x+c*left,y+c*.795,x+c*right,y+c*.795,Math.max(1,c*.018));
-      if(output%2===0)arrow(x+c*.5,y+c*.72,output,c*.06,'#c4f4f4');
+      if(output%2===0)arrow(x+c*.5,y+c*.72,output,c*.06,'#e9eddf');
     }
     if(transfer){
       // Flush loading deck with inset rollers and a small protective canopy.
-      line(x+c*.33,y+c*.6,x+c*.67,y+c*.6,'#b7f3f3',Math.max(1,c*.03));
+      line(x+c*.33,y+c*.6,x+c*.67,y+c*.6,'#cbd3bf',Math.max(1,c*.03));
       for(const px of [.39,.5,.61]){
         ctx.beginPath();ctx.arc(x+c*px,y+c*.71,c*.038,0,Math.PI*2);
-        ctx.fillStyle='#dcf3f6';ctx.fill();
+        ctx.fillStyle='#dfe4d8';ctx.fill();
         const angle=state.clock*3*(output===2?-1:1);
         line(x+c*px,y+c*.71,x+c*px+Math.cos(angle)*c*.022,y+c*.71+Math.sin(angle)*c*.022,'#64889e');
       }
-      line(x+c*.3,y+c*.35,x+c*.7,y+c*.35,'#8fbac9',Math.max(1,c*.035));
+      line(x+c*.3,y+c*.35,x+c*.7,y+c*.35,'#9ba79a',Math.max(1,c*.035));
       // Side brackets make the shaft and conveyor read as a single assembly.
-      for(const px of [.32,.64])box(x+c*px,y+c*.79,c*.04,c*.06,'#8fbac9',null,0);
+      for(const px of [.32,.64])box(x+c*px,y+c*.79,c*.04,c*.06,'#9ba79a',null,0);
     }
   }
   function drawMachine(state,b,v){
@@ -130,16 +123,16 @@ export function createSideViewRenderer(ctx, sprites) {
       if(side%2===0){
         const left=side===2?0:.74,right=side===2?.26:1;
         box(x+c*left,y+c*.61,c*(right-left),c*.18,alloy,edge,1);
-        box(x+c*left,y+c*.6,c*(right-left),c*.045,'#a9e5eb',null,1);
+        box(x+c*left,y+c*.6,c*(right-left),c*.045,'#bcc4b5',null,1);
         for(let i=0;i<3;i++){
           const rx=x+c*(left+(i+.5)*(right-left)/3);
-          ctx.beginPath();ctx.arc(rx,y+c*.71,c*.035,0,Math.PI*2);ctx.fillStyle='#d2e5ee';ctx.fill();
+          ctx.beginPath();ctx.arc(rx,y+c*.71,c*.035,0,Math.PI*2);ctx.fillStyle='#d5dad0';ctx.fill();
         }
         glowLine(x+c*left,y+c*.795,x+c*right,y+c*.795);
-        arrow(x+c*(left+right)/2,y+c*.71,incoming?(side+2)%4:side,c*.035,'#c4f4f4');
+        arrow(x+c*(left+right)/2,y+c*.71,incoming?(side+2)%4:side,c*.035,'#e9eddf');
       }else{
         const top=side===3?0:.72,bottom=side===3?.33:1;
-        box(x+c*.37,y+c*top,c*.26,c*(bottom-top),'#e9f8fa',null,0);
+        box(x+c*.37,y+c*top,c*.26,c*(bottom-top),'#f0f2ed',null,0);
         for(const px of [.37,.63]){
           line(x+c*px,y+c*top,x+c*px,y+c*bottom,edge,c*.035);
           glowLine(x+c*px,y+c*top,x+c*px,y+c*bottom);
@@ -148,53 +141,56 @@ export function createSideViewRenderer(ctx, sprites) {
       }
     }
     if(b.type==='producer'){
-      // A materializer chamber holds the recognizable element in a stasis field.
-      box(x+c*.17,y+c*.18,c*.66,c*.65,'#eaf0f5',edge,4);
+      // A glazed machine housing keeps the produced material visible.
+      box(x+c*.17,y+c*.18,c*.66,c*.65,'#eff1eb',edge,4);
       box(x+c*.21,y+c*.13,c*.58,c*.09,alloy,null,2);
       glowLine(x+c*.3,y+c*.22,x+c*.7,y+c*.22);
       box(x+c*.25,y+c*.29,c*.5,c*.38,e.bg,e.color+'88',3);
       sprite(b.el,x+c*.32,y+c*.3,c*.36);
       ctx.beginPath();ctx.ellipse(x+c*.5,y+c*.63,c*.18,c*.028,0,0,Math.PI*2);ctx.strokeStyle=cyan;ctx.stroke();
       const fraction=Math.min(b.timer/productionInterval(b),1);
-      box(x+c*.3,y+c*.735,c*.4,c*.035,'#bfd2df',null,1);
+      box(x+c*.3,y+c*.735,c*.4,c*.035,'#d1d7c8',null,1);
       if(fraction>0)box(x+c*.3,y+c*.735,c*.4*fraction,c*.035,cyan,null,1);
       if(producerLevel(b)>1){
-        box(x+c*.6,y+c*.1,c*.24,c*.15,'#4d7a91',null,2);
-        ctx.font=`600 ${Math.max(6,c*.11)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#c9f8fa';
+        box(x+c*.6,y+c*.1,c*.24,c*.15,'#758461',null,2);
+        ctx.font=`600 ${Math.max(6,c*.11)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#f0f4df';
         ctx.fillText('L'+producerLevel(b),x+c*.72,y+c*.175);
       }
       const [dx,dy]=dirs[b.dir];
       const portY=b.dir%2? .5:.69;
       line(x+c*.5+dx*c*.29,y+c*portY+dy*c*.29,x+c*.5+dx*c*.46,y+c*portY+dy*c*.46,alloy,c*.075);
-      arrow(x+c*.5+dx*c*.39,y+c*portY+dy*c*.39,b.dir,c*.04,'#aaf0f3');
+      arrow(x+c*.5+dx*c*.39,y+c*portY+dy*c*.39,b.dir,c*.04,'#e3eacb');
     }else if(b.type==='factory'){
-      // A fusion reactor replaces the smokestack: energy goes into combining elements.
-      box(x+c*.08,y+c*.3,c*.84,c*.53,'#dce8ef',edge,4);
+      // A mixing gear and warning lamp mark the combination machine.
+      box(x+c*.08,y+c*.3,c*.84,c*.53,'#e3e8dc',edge,4);
       box(x+c*.17,y+c*.2,c*.66,c*.12,alloy,null,2);
-      line(x+c*.5,y+c*.2,x+c*.5,y+c*.08,edge,1);
+      box(x+c*.2,y+c*.12,c*.14,c*.08,'#a3a995',edge,1);
       ctx.save();ctx.shadowColor=cyan;ctx.shadowBlur=5;ctx.beginPath();ctx.arc(x+c*.5,y+c*.08,c*.025,0,Math.PI*2);ctx.fillStyle=cyan;ctx.fill();ctx.restore();
-      box(x+c*.15,y+c*.39,c*.18,c*.25,'#49647a',null,2);
+      box(x+c*.15,y+c*.39,c*.18,c*.25,'#697362',null,2);
       for(let i=0;i<3;i++)glowLine(x+c*.18,y+c*(.44+i*.065),x+c*.29,y+c*(.44+i*.065));
-      box(x+c*.4,y+c*.38,c*.4,c*.33,'#f5fcfc','#8cbdca',3);
-      sprite('factory',x+c*.46,y+c*.39,c*.27);
+      box(x+c*.4,y+c*.38,c*.4,c*.33,'#f3f5ed','#a4b29a',3);
+      ctx.save();ctx.translate(x+c*.6,y+c*.535);ctx.rotate(state.clock*.7);
+      ctx.beginPath();ctx.arc(0,0,c*.085,0,Math.PI*2);ctx.fillStyle='#9aa88b';ctx.fill();
+      for(let i=0;i<6;i++){ctx.rotate(Math.PI/3);box(c*.07,-c*.025,c*.045,c*.05,'#7c8b70',null,0);}
+      ctx.beginPath();ctx.arc(0,0,c*.03,0,Math.PI*2);ctx.fillStyle='#e8eddc';ctx.fill();ctx.restore();
       ctx.beginPath();ctx.ellipse(x+c*.6,y+c*.68,c*.16,c*.018,0,0,Math.PI*2);ctx.strokeStyle=cyan;ctx.stroke();
       arrow(x+c*.8,y+c*.77,b.dir,c*.045,'#5a859a');
     }else{
-      // A holographic trading terminal explains its suspension with the same hover base.
-      box(x+c*.14,y+c*.64,c*.72,c*.18,'#c8d7e3',edge,3);
+      // A compact cash terminal shares the same support base.
+      box(x+c*.14,y+c*.64,c*.72,c*.18,'#d5dccc',edge,3);
       box(x+c*.4,y+c*.5,c*.2,c*.15,alloy,null,1);
-      box(x+c*.18,y+c*.22,c*.64,c*.35,'#e5f8fa','#76bfcc',3);
+      box(x+c*.18,y+c*.22,c*.64,c*.35,'#e9efdd','#a1b38b',3);
       glowLine(x+c*.25,y+c*.57,x+c*.75,y+c*.57);
-      ctx.font=`600 ${c*.25}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#409aa9';ctx.fillText('$',x+c*.5,y+c*.39);
+      ctx.font=`600 ${c*.25}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#678053';ctx.fillText('$',x+c*.5,y+c*.39);
       for(const px of [.24,.76])glowLine(x+c*px,y+c*.72,x+c*(px+.04),y+c*.72,2);
     }
     if(c>=34){
-      ctx.font=`600 ${Math.max(6,c*.105)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#d6f5fa';
-      ctx.fillText(b.type==='seller'?'TRADE':b.type==='factory'?'FUSION':e.name.toUpperCase(),x+c*.5,y+c*.91,c*.78);
+      ctx.font=`600 ${Math.max(6,c*.105)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#edf1e5';
+      ctx.fillText(b.type==='seller'?'TRADE':b.type==='factory'?'MIXER':e.name.toUpperCase(),x+c*.5,y+c*.91,c*.78);
     }
   }
   return {
-    drawBlock(state,b,v,ghost=false){ctx.save();ctx.translate(0,v.reducedMotion?0:Math.sin(state.clock*1.4)*Math.min(1.2,v.cell*.025));ctx.globalAlpha=ghost?.45:1;if(b.type==='belt')drawConveyor(state,b,v);else drawMachine(state,b,v);ctx.restore();},
+    drawBlock(state,b,v,ghost=false){ctx.save();ctx.translate(0,v.reducedMotion?0:Math.sin(state.clock*1.4)*Math.min(1.2,v.cell*.008));ctx.globalAlpha=ghost?.45:1;if(b.type==='belt')drawConveyor(state,b,v);else drawMachine(state,b,v);ctx.restore();},
     drawBackdrop(v,showGrid){
       const {ox,oy,cell:c,cols,rows}=v;
       ctx.save();
@@ -220,7 +216,7 @@ export function createSideViewRenderer(ctx, sprites) {
       const c=v.cell,position=cargoPosition(state,p);
       const size=Math.max(11,c*.28);
       const x=v.ox+position.x*c;
-      const y=v.oy+position.y*c-size/2+(v.reducedMotion?0:Math.sin(time*1.4)*Math.min(1.2,c*.025));
+      const y=v.oy+position.y*c-size/2+(v.reducedMotion?0:Math.sin(time*1.4)*Math.min(1.2,c*.008));
       sprite(p.el,x-size/2,y-size/2,size);
     },
   };
