@@ -1,4 +1,4 @@
-import { dirs, key, place } from './engine.js';
+import { dirs, key, place, recipes } from './engine.js';
 
 export function machineConnections(state, machine) {
   const ports = [];
@@ -11,6 +11,17 @@ export function machineConnections(state, machine) {
     if (incoming || outgoing) ports.push({ side, incoming });
   }
   return ports;
+}
+
+// Animate the same outgoing step that the simulation will commit at progress 1.
+export function cargoPosition(state, particle) {
+  const source = state.blocks[key(particle.x, particle.y)];
+  const [dx, dy] = dirs[source?.dir ?? particle.dir];
+  const next = state.blocks[key(particle.x + dx, particle.y + dy)];
+  const canEnter = (next?.type === 'belt' && !state.particles.some(other => other !== particle && other.x === next.x && other.y === next.y)) || next?.type === 'seller' ||
+    (next?.type === 'factory' && recipes[next.el].includes(particle.el) && (next.stock[particle.el] || 0) < 20);
+  const t = canEnter ? Math.max(0, Math.min(1, particle.progress)) : 0;
+  return { x: particle.x + .5 + dx * t, y: particle.y + .6 + dy * t };
 }
 
 // Only show ports that carry items: incoming outputs and the belt's chosen exit.

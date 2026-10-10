@@ -29,7 +29,7 @@ function draw(){
   sideView.drawBackdrop(viewport(),!!selection||erase);
   Object.values(state.blocks).filter(b=>b.type==='belt').forEach(b=>drawBlock(b));
   Object.values(state.blocks).filter(b=>b.type!=='belt').forEach(b=>drawBlock(b));
-  for(const particle of state.particles)sideView.drawCargo(particle,viewport(),state.clock);
+  for(const particle of state.particles)sideView.drawCargo(state,particle,viewport(),state.clock);
 
 if(hover&&hover.x>=0&&hover.x<COLS&&hover.y>=0&&hover.y<ROWS){const b=state.blocks[key(hover.x,hover.y)];if(selection&&!b)drawBlock({...hover,...selection,dir:direction},true);ctx.strokeStyle=erase?'#c98568':'#8a9d73';ctx.lineWidth=2;ctx.strokeRect(ox+hover.x*cell+1,oy+hover.y*cell+1,cell-3,cell-3);if(b){const desc=b.type==='factory'?`${elements[b.el].name} · ${recipes[b.el].map(e=>`${elements[e].name}: ${b.stock[e]||0}`).join(' / ')}`:b.type==='producer'?`${elements[b.el].name} · L${producerLevel(b)} · every ${productionInterval(b).toFixed(2)}s · click to upgrade`:b.type==='seller'?'Sells every element':(b.dir%2?'Lift · ':'Conveyor · ')+['right','down','left','up'][b.dir];ctx.font='10px sans-serif';const width=ctx.measureText(desc).width+22;const tx=Math.max(4,Math.min(W-width-4,ox+hover.x*cell));const ty=Math.max(48,oy+hover.y*cell-31);rounded(tx,ty,width,24,5,'#fbfaf3','#d4dac5');ctx.fillStyle='#637454';ctx.textAlign='left';ctx.fillText(desc,tx+11,ty+16);}}}
 let beltStroke=null;

@@ -1,7 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fresh, place, key, tick, remove } from './engine.js';
-import { conveyorConnections, extendConveyor, machineConnections } from './conveyors.js';
+import { conveyorConnections, extendConveyor, machineConnections, cargoPosition } from './conveyors.js';
+
+test('cargo travels forward over machine bridges and follows rotated outputs',()=>{
+  const s=empty();place(s,0,0,'producer','earth');place(s,1,0,'belt');place(s,2,0,'factory','lava');
+  const p={x:0,y:0,el:'earth',dir:0,progress:.75};
+  assert.deepEqual(cargoPosition(s,p),{x:1.25,y:.6});
+  p.x=1;p.progress=1;
+  assert.deepEqual(cargoPosition(s,p),{x:2.5,y:.6});
+  s.blocks[key(1,0)].dir=1;place(s,1,1,'seller');p.progress=.5;
+  assert.deepEqual(cargoPosition(s,p),{x:1.5,y:1.1});
+  remove(s,1,1);
+  assert.deepEqual(cargoPosition(s,p),{x:1.5,y:.6});
+});
 
 test('machine bridges follow incoming and outgoing transport, including direct connections',()=>{
   const s=empty();place(s,0,0,'producer','earth');place(s,1,0,'factory','lava');place(s,2,0,'seller');place(s,1,1,'belt',null,3);

@@ -1,4 +1,4 @@
-import { conveyorConnections, machineConnections } from './conveyors.js';
+import { conveyorConnections, machineConnections, cargoPosition } from './conveyors.js';
 import { elements, dirs,productionInterval,producerLevel } from './engine.js';
 
 // Side elevation renderer: tile positions remain the logical transport grid.
@@ -216,11 +216,11 @@ export function createSideViewRenderer(ctx, sprites) {
       }
       ctx.restore();
     },
-    drawCargo(p,v,time=0){
-      const t=Math.min(1,p.progress),c=v.cell;
-      const x=v.ox+(p.fromX+(p.x-p.fromX)*t+.5)*c;
-      const y=v.oy+(p.fromY+(p.y-p.fromY)*t+.48)*c+(v.reducedMotion?0:Math.sin(time*1.4)*Math.min(1.2,c*.025));
+    drawCargo(state,p,v,time=0){
+      const c=v.cell,position=cargoPosition(state,p);
       const size=Math.max(11,c*.28);
+      const x=v.ox+position.x*c;
+      const y=v.oy+position.y*c-size/2+(v.reducedMotion?0:Math.sin(time*1.4)*Math.min(1.2,c*.025));
       sprite(p.el,x-size/2,y-size/2,size);
     },
   };
