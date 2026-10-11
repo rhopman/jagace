@@ -1,5 +1,14 @@
 import { dirs, key, place, transportStep } from './engine.js';
 
+// Short vertical joins occupy only the gap between two existing blocks.
+export function interBlockLifts(state) {
+  return Object.values(state.blocks).filter(b=>b.type!=='fan'&&b.type!=='seller'&&b.dir%2===1).flatMap(source=>{
+    const [dx,dy]=dirs[source.dir];
+    const destination=state.blocks[key(source.x+dx,source.y+dy)];
+    return destination&&['belt','factory','seller','lift'].includes(destination.type)?[{source,destination}]:[];
+  });
+}
+
 export function machineConnections(state, machine) {
   const ports = [];
   for (let side = 0; side < 4; side++) {

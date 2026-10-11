@@ -1,4 +1,4 @@
-import { conveyorConnections, machineConnections, cargoPosition } from './conveyors.js';
+import { conveyorConnections, machineConnections, cargoPosition, interBlockLifts } from './conveyors.js';
 import { elements, dirs,productionInterval,producerLevel } from './engine.js';
 
 // Side elevation renderer: tile positions remain the logical transport grid.
@@ -192,6 +192,19 @@ export function createSideViewRenderer(ctx, sprites) {
     }
   }
   return {
+    drawConnections(state,v){
+      const c=v.cell;
+      for(const {source,destination} of interBlockLifts(state)){
+        const upper=source.y<destination.y?source:destination,lower=source.y<destination.y?destination:source;
+        const x=v.ox+(source.x+.5)*c;
+        const top=v.oy+(upper.y+(upper.type==='belt'?.79:.83))*c;
+        const bottom=v.oy+(lower.y+(lower.type==='belt'?.6:lower.type==='seller'?.22:.18))*c;
+        for(const offset of [-.12,.12])line(x+c*offset,top,x+c*offset,bottom,alloy,Math.max(1,c*.025));
+        const phase=(state.clock*.8)%1;
+        const carrier=source.dir===1?phase:1-phase;
+        box(x-c*.1,top+(bottom-top)*carrier,c*.2,c*.035,'#a6b498',edge,1);
+      }
+    },
     drawBlock(state,b,v,ghost=false){ctx.save();ctx.translate(0,v.reducedMotion?0:Math.sin(state.clock*1.4)*Math.min(1.2,v.cell*.008));ctx.globalAlpha=ghost?.45:1;if(b.type==='belt')drawConveyor(state,b,v);else if(b.type==='fan')drawFan(state,b,v);else if(b.type==='lift')drawLift(state,b,v);else drawMachine(state,b,v);ctx.restore();},
     drawBackdrop(v,showGrid){
       const {ox,oy,cell:c,cols,rows}=v;

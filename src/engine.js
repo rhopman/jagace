@@ -91,7 +91,7 @@ export function transportStep(s,p){
   const b=s.blocks[key(p.x,p.y)];
   let dir=b?.type==='fan'?3:b?.dir??(p.airborne?(p.dir===3?3:1):p.dir);
   let [dx,dy]=dirs[dir],nx=p.x+dx,ny=p.y+dy,dest=s.blocks[key(nx,ny)];
-  if(dir===3&&b&&b.type!=='fan'&&b.type!=='lift'&&dest?.type!=='fan'&&dest?.type!=='lift'){
+  if(dir===3&&b&&b.type!=='fan'&&b.type!=='lift'&&!['belt','factory','seller','fan','lift'].includes(dest?.type)){
     dir=1;[dx,dy]=dirs[dir];nx=p.x+dx;ny=p.y+dy;dest=s.blocks[key(nx,ny)];
   }
   return {nx,ny,dest,dir};

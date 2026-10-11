@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fresh, place, key, tick, remove } from './engine.js';
-import { conveyorConnections, extendConveyor, machineConnections, cargoPosition } from './conveyors.js';
+import { conveyorConnections, extendConveyor, machineConnections, cargoPosition, interBlockLifts } from './conveyors.js';
 
 test('cargo travels forward over machine bridges and follows rotated outputs',()=>{
   const s=empty();place(s,0,0,'producer','earth');place(s,1,0,'belt');place(s,2,0,'factory','lava');
@@ -25,6 +25,15 @@ test('machine bridges follow incoming and outgoing transport, including direct c
 });
 
 function empty(){const s=fresh();s.blocks={};s.money=1000;return s;}
+
+test('vertical neighboring machines get a gap connector without an extra block or purchase',()=>{
+  const s=empty();place(s,2,3,'producer','earth',3);place(s,2,2,'seller');
+  const money=s.money;
+  assert.equal(interBlockLifts(s).length,1);
+  for(let i=0;i<400;i++)tick(s,.05);
+  assert.ok(s.sold>=5);assert.equal(Object.keys(s.blocks).length,2);assert.equal(s.money,money+s.earned);
+  remove(s,2,2);assert.equal(interBlockLifts(s).length,0);
+});
 
 test('belts join both sides of a fan without changing its upward output',()=>{
   const s=empty();place(s,0,5,'producer','earth');place(s,1,5,'belt');
