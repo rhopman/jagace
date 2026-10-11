@@ -87,7 +87,7 @@ export function createSideViewRenderer(ctx, sprites) {
     // open so cargo can rise directly into the fan's airflow.
     for(const {side,incoming} of machineConnections(state,b)){
       if(!incoming||side%2!==0)continue;
-      const left=side===2?0:.62,right=side===2?.38:1;
+      const left=side===2?0:.54,right=side===2?.46:1;
       box(x+c*left,y+c*.61,c*(right-left),c*.18,alloy,edge,1);
       box(x+c*left,y+c*.6,c*(right-left),c*.045,'#bcc4b5',null,1);
       for(let i=0;i<3;i++){
@@ -98,10 +98,13 @@ export function createSideViewRenderer(ctx, sprites) {
       }
       arrow(x+c*(left+right)/2,y+c*.71,(side+2)%4,c*.035,'#e9eddf');
     }
-    ctx.save();ctx.translate(x+c*.5,y+c*.66);ctx.rotate(state.clock*5);
-    for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);box(c*.02,-c*.04,c*.23,c*.08,'#c8d1c0',null,2);}
+    // A flush grille carries cargo into the center; the rotor sits below it.
+    box(x+c*.32,y+c*.6,c*.36,c*.045,'#cbd3bf',edge,1);
+    for(let i=0;i<5;i++)line(x+c*(.35+i*.07),y+c*.6,x+c*(.35+i*.07),y+c*.645,'#849276',1);
+    ctx.save();ctx.translate(x+c*.5,y+c*.735);ctx.rotate(state.clock*5);
+    for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);box(c*.02,-c*.025,c*.13,c*.05,'#c8d1c0',null,2);}
     ctx.restore();
-    ctx.beginPath();ctx.arc(x+c*.5,y+c*.66,c*.045,0,Math.PI*2);ctx.fillStyle='#e2e7da';ctx.fill();
+    ctx.beginPath();ctx.arc(x+c*.5,y+c*.735,c*.03,0,Math.PI*2);ctx.fillStyle='#e2e7da';ctx.fill();
     for(let i=0;i<3;i++){
       const px=x+c*(.32+i*.18),rise=(state.clock*.9+i*.23)%1;
       line(px,y+c*(.48-rise*.45),px,y+c*(.37-rise*.45),'#a9bd9988',1.5);
@@ -199,9 +202,10 @@ export function createSideViewRenderer(ctx, sprites) {
       for(const {source,destination} of interBlockLifts(state)){
         const upper=source.y<destination.y?source:destination,lower=source.y<destination.y?destination:source;
         const x=v.ox+(source.x+.5)*c;
-        const top=v.oy+(upper.y+(upper.type==='belt'?.79:.83))*c;
-        const bottom=v.oy+(lower.y+(lower.type==='belt'?.6:lower.type==='seller'?.22:.18))*c;
+        const top=v.oy+(upper.y+(upper.type==='belt'?.79:upper.type==='fan'?.82:.83))*c;
+        const bottom=v.oy+(lower.y+(lower.type==='belt'?.6:lower.type==='fan'?.6:lower.type==='seller'?.22:.18))*c;
         for(const offset of [-.12,.12])line(x+c*offset,top,x+c*offset,bottom,alloy,Math.max(1,c*.025));
+        for(const y of [top,bottom])box(x-c*.15,y-c*.018,c*.3,c*.036,'#b9c5ad',edge,1);
         const phase=(state.clock*.8)%1;
         const carrier=source.dir===1?phase:1-phase;
         box(x-c*.1,top+(bottom-top)*carrier,c*.2,c*.035,'#a6b498',edge,1);
