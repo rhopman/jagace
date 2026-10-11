@@ -26,6 +26,19 @@ test('machine bridges follow incoming and outgoing transport, including direct c
 
 function empty(){const s=fresh();s.blocks={};s.money=1000;return s;}
 
+test('belts join both sides of a fan without changing its upward output',()=>{
+  const s=empty();place(s,0,5,'producer','earth');place(s,1,5,'belt');
+  place(s,2,5,'fan');place(s,3,5,'belt',null,2);place(s,4,5,'producer','water',2);place(s,2,1,'seller');
+  const before=s.money;
+  assert.equal(extendConveyor(s,{x:1,y:5},{x:2,y:5}).joinedExisting,true);
+  assert.equal(s.money,before);assert.equal(s.blocks[key(2,5)].dir,3);
+  assert.deepEqual(machineConnections(s,s.blocks[key(2,5)]),[{side:0,incoming:true},{side:2,incoming:true}]);
+  assert.equal(conveyorConnections(s,s.blocks[key(1,5)]).outputConnected,true);
+  assert.equal(conveyorConnections(s,s.blocks[key(3,5)]).outputConnected,true);
+  for(let i=0;i<800;i++)tick(s,.05);
+  assert.ok(s.sold>12);assert.ok(s.earned>s.sold*3);
+});
+
 test('straight belts connect to the producer, each other, and seller',()=>{
   const s=empty();place(s,0,0,'producer','earth');place(s,1,0,'belt');place(s,2,0,'belt');place(s,3,0,'seller');
   assert.deepEqual(conveyorConnections(s,s.blocks[key(1,0)]),{inputs:[2],output:0,outputConnected:true});

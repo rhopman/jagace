@@ -81,6 +81,21 @@ export function createSideViewRenderer(ctx, sprites) {
   function drawFan(state,b,v){
     const c=v.cell,x=v.ox+b.x*c,y=v.oy+b.y*c;
     box(x+c*.14,y+c*.58,c*.72,c*.24,alloy,edge,3);
+    // Side loading decks meet belt edges at the same height; the center stays
+    // open so cargo can rise directly into the fan's airflow.
+    for(const {side,incoming} of machineConnections(state,b)){
+      if(!incoming||side%2!==0)continue;
+      const left=side===2?0:.62,right=side===2?.38:1;
+      box(x+c*left,y+c*.61,c*(right-left),c*.18,alloy,edge,1);
+      box(x+c*left,y+c*.6,c*(right-left),c*.045,'#bcc4b5',null,1);
+      for(let i=0;i<3;i++){
+        const rx=x+c*(left+(i+.5)*(right-left)/3);
+        ctx.beginPath();ctx.arc(rx,y+c*.71,c*.035,0,Math.PI*2);ctx.fillStyle='#d5dad0';ctx.fill();
+        const angle=state.clock*3*(side===0?-1:1);
+        line(rx,y+c*.71,rx+Math.cos(angle)*c*.022,y+c*.71+Math.sin(angle)*c*.022,'#819076');
+      }
+      arrow(x+c*(left+right)/2,y+c*.71,(side+2)%4,c*.035,'#e9eddf');
+    }
     ctx.save();ctx.translate(x+c*.5,y+c*.66);ctx.rotate(state.clock*5);
     for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);box(c*.02,-c*.04,c*.23,c*.08,'#c8d1c0',null,2);}
     ctx.restore();

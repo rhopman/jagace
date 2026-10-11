@@ -46,7 +46,7 @@ export function extendConveyor(state, previous, next) {
   const source = state.blocks[key(previous.x, previous.y)];
   if (source?.type !== 'belt') return { error: 'Start the path with a conveyor.' };
   const destination = state.blocks[key(next.x, next.y)];
-    if (destination && !['belt', 'fan', 'factory', 'seller'].includes(destination.type)) return { error: 'A producer is in the way. Start the conveyor beside its output.' };
+  if (destination && !['belt', 'fan', 'factory', 'seller'].includes(destination.type)) return { error: 'A producer is in the way. Start the conveyor beside its output.' };
   if (!destination) {
     const error = place(state, next.x, next.y, 'belt', null, dir);
     if (error) return { error };
