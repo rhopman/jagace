@@ -31,3 +31,16 @@ test('generated elements support continuing discoveries and restore from a save'
 test('existing recipes keep their original output',()=>{
   assert.equal(createCombination(state(),['fire','earth']),'lava');
 });
+test('generated discoveries use recognizable ingredient-based materials without codes',()=>{
+  const s=state();const id=createCombination(s,['wood','water']);
+  assert.equal(elements[id].name,'Paper');assert.equal(elements[id].artId,'paper');
+  const rust=createCombination(s,['metal','water']);assert.equal(elements[rust].name,'Rust');
+});
+test('legacy fantasy names are migrated without changing discoveries or balances',()=>{
+  const s=state(),id=createCombination(s,['gold','ice']);
+  const saved=JSON.parse(JSON.stringify(s)),value=saved.generated[id].element.value;
+  saved.generated[id].element.name='Mossy Mist EWR7';delete saved.generated[id].element.namingVersion;
+  saved.unlocked.push(id);saved.crafted[id]=3;prepareState(saved);
+  assert.equal(elements[id].name,'Gold flakes');assert.equal(saved.generated[id].element.value,value);
+  assert.equal(saved.money,100000);assert.equal(saved.crafted[id],3);assert.ok(saved.unlocked.includes(id));
+});

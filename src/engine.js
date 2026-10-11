@@ -1,3 +1,4 @@
+import {materialIdentity} from './material-names.js';
 export const elements={earth:{name:'Earth',icon:'◆',color:'#a38c57',bg:'#e9dfc8',value:3,cost:60,interval:3},wind:{name:'Wind',icon:'≋',color:'#80a49a',bg:'#e0e9e5',value:3,cost:60,interval:3},fire:{name:'Fire',icon:'♨',color:'#d58e59',bg:'#f6e1ce',value:4,cost:80,interval:4},water:{name:'Water',icon:'◕',color:'#719bb1',bg:'#dce8ed',value:4,cost:80,interval:4},lava:{name:'Lava',icon:'◒',color:'#d47b42',bg:'#f2d2b9',value:18,cost:220,interval:5},steam:{name:'Steam',icon:'♧',color:'#9aaba0',bg:'#e2e9df',value:20,cost:250,interval:5},dust:{name:'Dust',icon:'✧',color:'#b8a678',bg:'#eee6d1',value:14,cost:180,interval:4},clay:{name:'Clay',icon:'▰',color:'#b98a77',bg:'#efddd2',value:16,cost:200,interval:5},stone:{name:'Stone',icon:'⬟',color:'#8c9280',bg:'#e0e2d6',value:45,cost:550,interval:7},glass:{name:'Glass',icon:'◇',color:'#7ba6a8',bg:'#dfefea',value:90,cost:1000,interval:9}};
 Object.assign(elements, {
   moss: {name:'Moss',icon:'*',color:'#718d47',bg:'#e6edd8',value:25,cost:320,interval:5},
@@ -48,6 +49,7 @@ const tiers={};
 export function registerGenerated(s){
   for(const [id,entry] of Object.entries(s.generated||{})){
     elements[id]=entry.element;recipes[id]=entry.inputs;
+    if(!entry.element.namingVersion){const identity=materialIdentity(entry.inputs,elements,entry.element.seed||0);Object.assign(entry.element,identity,{namingVersion:1});}
   }
 }
 export function createCombination(s,inputs){
@@ -61,9 +63,8 @@ export function createCombination(s,inputs){
   while(elements[id])id+='x';
   const value=Math.ceil(sorted.reduce((sum,input)=>sum+elements[input].value,0)*1.3);
   const hue=hash%360;
-  const adjectives=['Amber','Velvet','Prismatic','Azure','Mossy','Radiant','Silver','Copper'];
-  const materials=['Shard','Resin','Pearl','Bloom','Dust','Ore','Mist','Gel'];
-  const element={name:adjectives[hash%8]+' '+materials[hash2%8]+' '+code.slice(0,4).toUpperCase(),icon:'◇',color:`hsl(${hue} 40% 46%)`,bg:`hsl(${hue} 35% 89%)`,value,cost:Math.ceil(value*14/10)*10,interval:Math.min(60,Math.max(...sorted.map(input=>elements[input].interval))+2),generated:true,seed:hash};
+  const identity=materialIdentity(sorted,elements,hash);
+  const element={...identity,namingVersion:1,icon:'◇',color:`hsl(${hue} 40% 46%)`,bg:`hsl(${hue} 35% 89%)`,value,cost:Math.ceil(value*14/10)*10,interval:Math.min(60,Math.max(...sorted.map(input=>elements[input].interval))+2),generated:true,seed:hash};
   s.generated??={};s.generated[id]={element,inputs:sorted};elements[id]=element;recipes[id]=sorted;
   return id;
 }

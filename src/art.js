@@ -1,6 +1,7 @@
 import {elements} from './engine.js';
 // Shared vector illustrations keep the shop, buildings and moving cargo consistent.
 const art = {
+  paper: '<path fill="#f3eedc" d="M15 5h25l10 12v42H15Z"/><path d="M40 5v12h10M22 28h20M22 36h20M22 44h15" stroke="#aaa58d"/>',
   moss: '<path fill="#799950" d="m7 48 5-18 13-8 15 3 16 15-5 15H12Z"/><path d="m17 39 9-7m7 12 10-9m-17 16 8-7" stroke="#b4cd87" stroke-width="5"/>',
   obsidian: '<path fill="#63516e" d="m11 48 6-25 20-16 15 21-5 29-23 2Z"/><path fill="#9784aa" d="m17 23 20-16-7 30-19 11Z"/><path d="m30 37 22-9m-22 9-6 22" stroke="#46384f"/>',
   smoke: '<path d="M24 57c-23-15 23-23 2-36C9 10 28-1 39 8m-1 47c26-11-15-18 3-29 15-9 14-16 8-21" stroke="#93948b" stroke-width="8" fill="none"/>',
@@ -47,7 +48,7 @@ const art = {
 export function iconMarkup(id) {
   const e=elements[id];
   const generated=e?.generated?`<g transform="rotate(${e.seed%90} 32 32)"><path d="m32 7 22 14-4 27-18 10-20-14 1-24Z" fill="${e.bg}" stroke="${e.color}"/><path d="m32 7 0 25 18 16M13 20l19 12-20 12m20-12 22-11" stroke="${e.color}"/><circle cx="32" cy="32" r="${5+e.seed%8}" fill="${e.color}"/></g>`:null;
-  return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" stroke="#626d59" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${art[id] || generated || art.earth}</svg>`;
+  return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" stroke="#626d59" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${art[id] || art[e?.artId] || generated || art.earth}</svg>`;
 }
 export function createSprites() {
   return Object.fromEntries(Object.keys(art).map(id => {
