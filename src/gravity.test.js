@@ -12,6 +12,17 @@ test('fan blows elements upward through an empty column to a seller',()=>{
   const s=empty();place(s,1,6,'producer','earth');place(s,2,6,'fan');place(s,2,1,'seller');
   run(s);assert.ok(s.sold>=6);assert.equal(s.blocks[key(2,6)].dir,3);
 });
+test('stacked lifts carry elements upward in a compact connected shaft',()=>{
+  const s=empty();place(s,1,5,'producer','earth');
+  for(let y=2;y<=5;y++)place(s,2,y,'lift',null,3);
+  place(s,2,1,'seller');run(s);assert.ok(s.sold>=6);
+});
+test('lifts can carry elements downward and saves preserve their direction',()=>{
+  const s=empty();place(s,1,1,'producer','earth');
+  for(let y=1;y<=4;y++)place(s,2,y,'lift',null,1);
+  place(s,2,5,'seller');prepareState(s);run(s);assert.ok(s.sold>=6);
+  assert.equal(s.blocks[key(2,1)].dir,1);
+});
 test('falling elements land on a horizontal belt and continue to its seller',()=>{
   const s=empty();place(s,2,0,'producer','earth',1);place(s,2,4,'belt');place(s,3,4,'seller');
   run(s);assert.ok(s.sold>=6);

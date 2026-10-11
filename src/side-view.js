@@ -107,6 +107,24 @@ export function createSideViewRenderer(ctx, sprites) {
     arrow(x+c*.5,y+c*.32,3,c*.07,'#849b6b');
     repulsor(x+c*.5,y+c*.86,c,state.clock);
   }
+  function drawLift(state,b,v){
+    const c=v.cell,x=v.ox+b.x*c,y=v.oy+b.y*c;
+    box(x+c*.28,y,c*.44,c,'#eef1e8',null,0);
+    for(const px of [.28,.72])line(x+c*px,y,x+c*px,y+c,alloy,c*.045);
+    const phase=(state.clock*.5)%1;
+    for(let i=-1;i<4;i++){
+      const height=(i+(b.dir===1?phase:1-phase))*.33;
+      if(height<0||height>1)continue;
+      box(x+c*.32,y+c*height,c*.36,c*.045,'#a6b498',edge,1);
+    }
+    for(const {side,incoming} of machineConnections(state,b)){
+      if(!incoming||side%2)continue;
+      const left=side===2?0:.5;
+      box(x+c*left,y+c*.61,c*.5,c*.18,alloy,edge,1);
+      box(x+c*left,y+c*.6,c*.5,c*.045,'#bcc4b5',null,1);
+    }
+    arrow(x+c*.5,y+c*.45,b.dir,c*.08,'#738466');
+  }
   function drawMachine(state,b,v){
     const c=v.cell,x=v.ox+b.x*c,y=v.oy+b.y*c,e=elements[b.el];
     platform(x,y,c,state.clock);
@@ -174,7 +192,7 @@ export function createSideViewRenderer(ctx, sprites) {
     }
   }
   return {
-    drawBlock(state,b,v,ghost=false){ctx.save();ctx.translate(0,v.reducedMotion?0:Math.sin(state.clock*1.4)*Math.min(1.2,v.cell*.008));ctx.globalAlpha=ghost?.45:1;if(b.type==='belt')drawConveyor(state,b,v);else if(b.type==='fan')drawFan(state,b,v);else drawMachine(state,b,v);ctx.restore();},
+    drawBlock(state,b,v,ghost=false){ctx.save();ctx.translate(0,v.reducedMotion?0:Math.sin(state.clock*1.4)*Math.min(1.2,v.cell*.008));ctx.globalAlpha=ghost?.45:1;if(b.type==='belt')drawConveyor(state,b,v);else if(b.type==='fan')drawFan(state,b,v);else if(b.type==='lift')drawLift(state,b,v);else drawMachine(state,b,v);ctx.restore();},
     drawBackdrop(v,showGrid){
       const {ox,oy,cell:c,cols,rows}=v;
       ctx.save();

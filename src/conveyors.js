@@ -7,7 +7,7 @@ export function machineConnections(state, machine) {
     const neighbor = state.blocks[key(machine.x + dx, machine.y + dy)];
     if (!neighbor) continue;
     const incoming = machine.type !== 'producer' && neighbor.type !== 'seller' && neighbor.dir === (side + 2) % 4;
-    const outgoing = machine.type !== 'seller' && machine.dir === side && ['belt', 'fan', 'factory', 'seller'].includes(neighbor.type);
+    const outgoing = machine.type !== 'seller' && machine.dir === side && ['belt', 'fan', 'lift', 'factory', 'seller'].includes(neighbor.type);
     if (incoming || outgoing) ports.push({ side, incoming });
   }
   return ports;
@@ -17,7 +17,7 @@ export function machineConnections(state, machine) {
 export function cargoPosition(state, particle) {
   const {nx,ny,dest:next}=transportStep(state,particle);
   const dx=nx-particle.x,dy=ny-particle.y;
-  const canEnter = !next || (['belt','fan'].includes(next.type) && !state.particles.some(other => other !== particle && other.x === next.x && other.y === next.y)) || next?.type === 'seller' ||
+  const canEnter = !next || (['belt','fan','lift'].includes(next.type) && !state.particles.some(other => other !== particle && other.x === next.x && other.y === next.y)) || next?.type === 'seller' ||
     (next?.type === 'factory' && (next.stock[particle.el] || 0) < 20);
   const t = canEnter ? Math.max(0, Math.min(1, particle.progress)) : 0;
   return { x: particle.x + .5 + dx * t, y: particle.y + .6 + dy * t };
@@ -35,7 +35,7 @@ export function conveyorConnections(state, belt) {
   }
   const [dx, dy] = dirs[belt.dir];
   const next = state.blocks[key(belt.x + dx, belt.y + dy)];
-  return { inputs, output: belt.dir, outputConnected: !!next && ['belt', 'fan', 'factory', 'seller'].includes(next.type) };
+  return { inputs, output: belt.dir, outputConnected: !!next && ['belt', 'fan', 'lift', 'factory', 'seller'].includes(next.type) };
 }
 
 // A drag stroke turns its own preceding tile toward the next tile. Existing
@@ -46,7 +46,7 @@ export function extendConveyor(state, previous, next) {
   const source = state.blocks[key(previous.x, previous.y)];
   if (source?.type !== 'belt') return { error: 'Start the path with a conveyor.' };
   const destination = state.blocks[key(next.x, next.y)];
-  if (destination && !['belt', 'fan', 'factory', 'seller'].includes(destination.type)) return { error: 'A producer is in the way. Start the conveyor beside its output.' };
+  if (destination && !['belt', 'fan', 'lift', 'factory', 'seller'].includes(destination.type)) return { error: 'A producer is in the way. Start the conveyor beside its output.' };
   if (!destination) {
     const error = place(state, next.x, next.y, 'belt', null, dir);
     if (error) return { error };
