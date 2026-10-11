@@ -32,6 +32,20 @@ test('generic factories have a fixed price while advanced combinations take long
   assert.ok(factoryDuration('steel')>factoryDuration('lava'));
 });
 
+test('three-input mode preserves a valid pair until the slower third ingredient arrives',()=>{
+  const s=fresh();s.blocks={};s.particles=[];place(s,2,2,'factory');
+  const b=s.blocks[key(2,2)];b.inputCount=3;b.stock={earth:2,water:2};
+  tick(s,10);assert.deepEqual(s.crafted,{});assert.deepEqual(b.stock,{earth:2,water:2});
+  b.stock.wind=1;tick(s,.05);assert.equal(s.crafted.moss,1);assert.equal(s.crafted.clay,undefined);
+});
+
+test('three adjacent feeds automatically reserve ingredients for a three-element batch',()=>{
+  const s=fresh();s.blocks={};s.particles=[];
+  place(s,3,3,'factory');place(s,2,3,'producer','earth');place(s,3,2,'producer','water',1);place(s,3,4,'producer','wind',3);place(s,4,3,'seller');
+  for(let i=0;i<800;i++)tick(s,.05);
+  assert.ok(s.crafted.moss>=3);assert.equal(s.crafted.clay,undefined);assert.equal(s.crafted.ice,undefined);
+});
+
 test('one factory can discover different combinations and retain unmatched ingredients',()=>{
   const s=fresh();s.blocks={};s.particles=[];s.money=1000;
   place(s,0,0,'factory');place(s,1,0,'seller');
@@ -87,7 +101,7 @@ test('every advanced element remains reachable from the four starting elements',
 for(const [output,inputs] of Object.entries(recipes)){
   if(inputs.length===3)test(`${output}: waits for the third ingredient and consumes exactly one of each`,()=>{
     const s=fresh();s.blocks={};s.particles=[];
-    place(s,0,0,'factory');const b=s.blocks[key(0,0)];
+    place(s,0,0,'factory');const b=s.blocks[key(0,0)];b.inputCount=3;
     b.stock={[inputs[0]]:2,[inputs[1]]:2};
     tick(s,20);assert.equal(s.particles.length,0);assert.deepEqual(s.crafted,{});
     b.stock[inputs[2]]=1;

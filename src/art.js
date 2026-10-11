@@ -1,5 +1,9 @@
 // Shared vector illustrations keep the shop, buildings and moving cargo consistent.
 const art = {
+  moss: '<path fill="#799950" d="m7 48 5-18 13-8 15 3 16 15-5 15H12Z"/><path d="m17 39 9-7m7 12 10-9m-17 16 8-7" stroke="#b4cd87" stroke-width="5"/>',
+  obsidian: '<path fill="#63516e" d="m11 48 6-25 20-16 15 21-5 29-23 2Z"/><path fill="#9784aa" d="m17 23 20-16-7 30-19 11Z"/><path d="m30 37 22-9m-22 9-6 22" stroke="#46384f"/>',
+  smoke: '<path d="M24 57c-23-15 23-23 2-36C9 10 28-1 39 8m-1 47c26-11-15-18 3-29 15-9 14-16 8-21" stroke="#93948b" stroke-width="8" fill="none"/>',
+  storm: '<path fill="#8295ae" d="M12 34a11 11 0 0 1 2-22c5-13 24-12 30 2 17-2 22 19 5 22Z"/><path fill="#e8c75a" d="m33 28-14 20h11l-2 14 18-24H33Z"/><path d="m13 41-5 10m44-9-5 10" stroke="#789fbd" stroke-width="3"/>',
   lift: '<rect x="17" y="3" width="30" height="58" fill="#eef1e8"/><path d="M17 3v58M47 3v58" stroke="#626b68" stroke-width="4"/><path d="M21 14h22M21 48h22" stroke="#a6b498" stroke-width="4"/><path d="M32 43V22m-6 6 6-6 6 6" stroke="#738466" stroke-width="3"/>',
   fan: '<rect x="8" y="35" width="48" height="21" rx="4" fill="#68745e"/><circle cx="32" cy="43" r="15" fill="#d3dcc7"/><path d="M32 29v28m-14-14h28m-24-10 20 20m0-20L22 53" stroke="#91a37c" stroke-width="4"/><circle cx="32" cy="43" r="4" fill="#637456"/><path d="M18 24V9m-4 5 4-5 4 5m10 9V5m-4 5 4-5 4 5m10 19V9m-4 5 4-5 4 5" stroke="#91a37c" stroke-width="2"/>',
   brick: '<path fill="#c47668" d="m5 26 34-12 20 12v23L25 60 5 48Z"/><path fill="#e7a18a" d="m5 26 34-12 20 12-34 12Z"/><path d="m25 38 34-12M25 38v22m-20-34 20 12m12-17 18 11" stroke="#9f594f"/>',

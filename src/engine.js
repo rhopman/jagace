@@ -1,5 +1,9 @@
 export const elements={earth:{name:'Earth',icon:'◆',color:'#a38c57',bg:'#e9dfc8',value:3,cost:60,interval:3},wind:{name:'Wind',icon:'≋',color:'#80a49a',bg:'#e0e9e5',value:3,cost:60,interval:3},fire:{name:'Fire',icon:'♨',color:'#d58e59',bg:'#f6e1ce',value:4,cost:80,interval:4},water:{name:'Water',icon:'◕',color:'#719bb1',bg:'#dce8ed',value:4,cost:80,interval:4},lava:{name:'Lava',icon:'◒',color:'#d47b42',bg:'#f2d2b9',value:18,cost:220,interval:5},steam:{name:'Steam',icon:'♧',color:'#9aaba0',bg:'#e2e9df',value:20,cost:250,interval:5},dust:{name:'Dust',icon:'✧',color:'#b8a678',bg:'#eee6d1',value:14,cost:180,interval:4},clay:{name:'Clay',icon:'▰',color:'#b98a77',bg:'#efddd2',value:16,cost:200,interval:5},stone:{name:'Stone',icon:'⬟',color:'#8c9280',bg:'#e0e2d6',value:45,cost:550,interval:7},glass:{name:'Glass',icon:'◇',color:'#7ba6a8',bg:'#dfefea',value:90,cost:1000,interval:9}};
 Object.assign(elements, {
+  moss: {name:'Moss',icon:'*',color:'#718d47',bg:'#e6edd8',value:25,cost:320,interval:5},
+  obsidian: {name:'Obsidian',icon:'◆',color:'#63546f',bg:'#e8e0ed',value:30,cost:380,interval:6},
+  smoke: {name:'Smoke',icon:'~',color:'#8c8b83',bg:'#e8e7df',value:24,cost:300,interval:5},
+  storm: {name:'Storm',icon:'ϟ',color:'#7487aa',bg:'#e1e7f0',value:32,cost:400,interval:6},
   sand: {name:'Sand',icon:'⌁',color:'#c3a161',bg:'#f0e5c9',value:24,cost:300,interval:5},
   mud: {name:'Mud',icon:'●',color:'#94704e',bg:'#e6dccb',value:26,cost:320,interval:5},
   ice: {name:'Ice',icon:'❄',color:'#6aafc5',bg:'#dfedf2',value:22,cost:280,interval:5},
@@ -24,6 +28,8 @@ Object.assign(elements, {
   robot: {name:'Robot',icon:'#',color:'#8698ac',bg:'#e5eaf1',value:1850,cost:25000,interval:18},
 });
 export const recipes={
+  moss:['earth','water','wind'], obsidian:['earth','water','fire'],
+  smoke:['earth','wind','fire'], storm:['water','wind','fire'],
   lava:['earth','fire'], steam:['water','fire'], dust:['earth','wind'],
   clay:['earth','water'], stone:['lava','water'], glass:['dust','fire'],
   sand:['earth','dust'], mud:['clay','water'], ice:['water','wind'],
@@ -64,7 +70,12 @@ export function upgradeProducer(s,x,y){
   return null;
 }
 export function prepareState(s){s.crafted??={};if(s.transportVersion!==2){for(const [id,b]of Object.entries(s.blocks)){if(b.type==='belt'&&b.dir===3)b.type='fan';else if(b.type==='belt'&&b.dir===1){s.money+=b.paid??10;delete s.blocks[id];}}s.transportVersion=2;}for(const b of Object.values(s.blocks)){if(b.type==='factory'){if(b.paid===undefined)b.paid=150;b.el=null;}}return s;}
-export function factoryRecipe(block){return Object.keys(recipes).filter(el=>recipes[el].every(input=>(block.stock[input]||0)>0)).sort((a,b)=>recipes[b].length-recipes[a].length)[0]||null;}
+export function factoryInputCount(s,block){
+  if(block.inputCount===2||block.inputCount===3)return block.inputCount;
+  const feeds=dirs.filter(([dx,dy],side)=>{const b=s.blocks[key(block.x+dx,block.y+dy)];return b&&b.type!=='seller'&&b.dir===(side+2)%4;}).length;
+  return feeds>=3?3:0;
+}
+export function factoryRecipe(block,inputCount=0){return Object.keys(recipes).filter(el=>(!inputCount||recipes[el].length===inputCount)&&recipes[el].every(input=>(block.stock[input]||0)>0)).sort((a,b)=>recipes[b].length-recipes[a].length)[0]||null;}
 export const dirs=[[1,0],[0,1],[-1,0],[0,-1]];
 export const key=(x,y)=>`${x},${y}`;
 export function fresh(){let s={money:STARTING_MONEY,earned:0,sold:0,crafted:{},unlocked:['earth','wind','fire','water'],blocks:{},particles:[],clock:0};const add=(x,y,type,el,dir=0)=>s.blocks[key(x,y)]={x,y,type,el,dir,timer:0,stock:{},paid:price(type,el),level:1};add(2,3,'producer','earth');add(3,3,'belt');add(4,3,'belt');add(5,3,'factory',null);add(5,6,'producer','fire',3);add(5,5,'fan',null,3);add(5,4,'fan',null,3);add(6,3,'belt');add(7,3,'belt');add(8,3,'seller');s.transportVersion=2;return s;}
@@ -72,7 +83,7 @@ export function price(type,el){return type==='producer'?elements[el].cost:type==
 export function place(s,x,y,type,el,dir=0){if(s.blocks[key(x,y)])return 'This tile is already occupied.';if(type==='belt'&&dir===3)type='fan';if(type==='lift'&&dir%2===0)dir=3;if(type==='producer'&&!s.unlocked.includes(el))return `Craft ${DISCOVERY_BATCHES} batches in a factory to unlock this producer.`;const cost=price(type,el);if(s.money<cost)return 'Not enough money. Let your factory earn a little more.';s.money-=cost;s.blocks[key(x,y)]={x,y,type,el:type==='factory'?null:el,dir:type==='fan'?3:dir,timer:0,stock:{},paid:cost,level:1};return null;}
 export function remove(s,x,y){let b=s.blocks[key(x,y)];if(!b)return false;s.money+=Math.floor(((b.paid??(b.type==='factory'?150:price(b.type,b.el)))+(b.upgradeSpent||0))*.5);delete s.blocks[key(x,y)];return true;}
 function output(s,b,el){if(s.particles.filter(p=>p.x===b.x&&p.y===b.y).length>=4)return false;s.particles.push({x:b.x,y:b.y,fromX:b.x,fromY:b.y,el,progress:0,dir:b.dir});return true;}
-export function tick(s,dt){prepareState(s);s.clock+=dt;for(const b of Object.values(s.blocks)){b.timer+=dt;if(b.type==='producer'&&b.timer>=productionInterval(b)){if(output(s,b,b.el))b.timer=0;}if(b.type==='factory'){const result=factoryRecipe(b);if(result&&b.timer>=factoryDuration(result)&&output(s,b,result)){recipes[result].forEach(el=>b.stock[el]--);b.timer=0;s.crafted[result]=(s.crafted[result]||0)+1;if(s.crafted[result]>=DISCOVERY_BATCHES&&!s.unlocked.includes(result))s.unlocked.push(result);}}}
+export function tick(s,dt){prepareState(s);s.clock+=dt;for(const b of Object.values(s.blocks)){b.timer+=dt;if(b.type==='producer'&&b.timer>=productionInterval(b)){if(output(s,b,b.el))b.timer=0;}if(b.type==='factory'){const result=factoryRecipe(b,factoryInputCount(s,b));if(result&&b.timer>=factoryDuration(result)&&output(s,b,result)){recipes[result].forEach(el=>b.stock[el]--);b.timer=0;s.crafted[result]=(s.crafted[result]||0)+1;if(s.crafted[result]>=DISCOVERY_BATCHES&&!s.unlocked.includes(result))s.unlocked.push(result);}}}
 const alive=[];for(const p of s.particles){
   p.progress+=dt*(p.airborne?2.5:1.7);
   if(p.progress<1){alive.push(p);continue;}
