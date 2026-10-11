@@ -26,12 +26,14 @@ test('machine bridges follow incoming and outgoing transport, including direct c
 
 function empty(){const s=fresh();s.blocks={};s.money=1000;return s;}
 
-test('gap lifts connect producers, fans, stacked fans, and receiving blocks',()=>{
+test('fan lift connectors attach underneath while upward airflow stays open',()=>{
   const s=empty();place(s,2,5,'producer','earth',3);place(s,2,4,'fan');place(s,2,3,'fan');place(s,2,2,'seller');
-  assert.equal(interBlockLifts(s).length,3);
+  assert.equal(interBlockLifts(s).length,1);
   for(let i=0;i<600;i++)tick(s,.05);
   assert.ok(s.sold>=6);
   remove(s,2,3);assert.equal(interBlockLifts(s).length,1);
+  const above=empty();place(above,2,2,'producer','earth',1);place(above,2,3,'fan');
+  assert.equal(interBlockLifts(above).length,0);
 });
 
 test('vertical neighboring machines get a gap connector without an extra block or purchase',()=>{

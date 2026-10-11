@@ -5,6 +5,9 @@ export function interBlockLifts(state) {
   return Object.values(state.blocks).filter(b=>b.type!=='seller'&&b.dir%2===1).flatMap(source=>{
     const [dx,dy]=dirs[source.dir];
     const destination=state.blocks[key(source.x+dx,source.y+dy)];
+    // Fans connect mechanically underneath; their upper side stays open airflow.
+    if(source.type==='fan'&&source.dir===3)return [];
+    if(destination?.type==='fan'&&source.y<destination.y)return [];
     return destination&&['belt','fan','factory','seller','lift'].includes(destination.type)?[{source,destination}]:[];
   });
 }
