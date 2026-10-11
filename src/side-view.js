@@ -1,5 +1,6 @@
 import { conveyorConnections, machineConnections, cargoPosition, interBlockLifts } from './conveyors.js';
 import { elements, dirs,productionInterval,producerLevel } from './engine.js';
+import {iconMarkup} from './art.js';
 
 // Side elevation renderer: tile positions remain the logical transport grid.
 export function createSideViewRenderer(ctx, sprites) {
@@ -11,6 +12,7 @@ export function createSideViewRenderer(ctx, sprites) {
     ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();
   }
   function sprite(id,x,y,size) {
+    if(!sprites[id]&&elements[id]){const img=new Image();img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(iconMarkup(id));sprites[id]=img;}
     const img=sprites[id];if(img?.complete&&img.naturalWidth)ctx.drawImage(img,x,y,size,size);
   }
   function arrow(x,y,dir,size,color) {
@@ -147,7 +149,7 @@ export function createSideViewRenderer(ctx, sprites) {
       box(x+c*.17,y+c*.18,c*.66,c*.65,'#eff1eb',edge,4);
       box(x+c*.21,y+c*.13,c*.58,c*.09,alloy,null,2);
       glowLine(x+c*.3,y+c*.22,x+c*.7,y+c*.22);
-      box(x+c*.25,y+c*.29,c*.5,c*.38,e.bg,e.color+'88',3);
+      box(x+c*.25,y+c*.29,c*.5,c*.38,e.bg,e.generated?e.color:e.color+'88',3);
       sprite(b.el,x+c*.32,y+c*.3,c*.36);
       ctx.beginPath();ctx.ellipse(x+c*.5,y+c*.63,c*.18,c*.028,0,0,Math.PI*2);ctx.strokeStyle=cyan;ctx.stroke();
       const fraction=Math.min(b.timer/productionInterval(b),1);

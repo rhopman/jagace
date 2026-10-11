@@ -1,3 +1,4 @@
+import {elements} from './engine.js';
 // Shared vector illustrations keep the shop, buildings and moving cargo consistent.
 const art = {
   moss: '<path fill="#799950" d="m7 48 5-18 13-8 15 3 16 15-5 15H12Z"/><path d="m17 39 9-7m7 12 10-9m-17 16 8-7" stroke="#b4cd87" stroke-width="5"/>',
@@ -44,7 +45,9 @@ const art = {
 
 };
 export function iconMarkup(id) {
-  return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" stroke="#626d59" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${art[id] || art.earth}</svg>`;
+  const e=elements[id];
+  const generated=e?.generated?`<g transform="rotate(${e.seed%90} 32 32)"><path d="m32 7 22 14-4 27-18 10-20-14 1-24Z" fill="${e.bg}" stroke="${e.color}"/><path d="m32 7 0 25 18 16M13 20l19 12-20 12m20-12 22-11" stroke="${e.color}"/><circle cx="32" cy="32" r="${5+e.seed%8}" fill="${e.color}"/></g>`:null;
+  return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" stroke="#626d59" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${art[id] || generated || art.earth}</svg>`;
 }
 export function createSprites() {
   return Object.fromEntries(Object.keys(art).map(id => {
