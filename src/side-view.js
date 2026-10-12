@@ -4,8 +4,9 @@ import {iconMarkup} from './art.js';
 
 // Side elevation renderer: tile positions remain the logical transport grid.
 export function createSideViewRenderer(ctx, sprites) {
+  const pixelSprites={};
   function box(x,y,w,h,fill,stroke,r=2) {
-    ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();
+    ctx.beginPath();ctx.rect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));ctx.fillStyle=fill;ctx.fill();
     if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}
   }
   function line(x1,y1,x2,y2,color,width=1) {
@@ -13,13 +14,16 @@ export function createSideViewRenderer(ctx, sprites) {
   }
   function sprite(id,x,y,size) {
     if(!sprites[id]&&elements[id]){const img=new Image();img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(iconMarkup(id));sprites[id]=img;}
-    const img=sprites[id];if(img?.complete&&img.naturalWidth)ctx.drawImage(img,x,y,size,size);
+    const img=sprites[id];if(img?.complete&&img.naturalWidth){
+      if(!pixelSprites[id]){const tile=document.createElement('canvas');tile.width=tile.height=16;tile.getContext('2d').drawImage(img,0,0,16,16);pixelSprites[id]=tile;}
+      ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(pixelSprites[id],Math.round(x),Math.round(y),Math.round(size),Math.round(size));ctx.restore();
+    }
   }
   function arrow(x,y,dir,size,color) {
     ctx.save();ctx.translate(x,y);ctx.rotate(dir*Math.PI/2);
     line(-size,0,size,0,color,1.2);line(size-3,-3,size,0,color,1.2);line(size-3,3,size,0,color,1.2);ctx.restore();
   }
-  const alloy='#626b68',edge='#a2aba3',cyan='#93aa76';
+  const alloy='#565168',edge='#8e819e',cyan='#c2a650';
   function glowLine(x1,y1,x2,y2,width=1){
     ctx.save();
     line(x1,y1,x2,y2,cyan,width);ctx.restore();
