@@ -44,6 +44,8 @@ export const recipes={
   computer:['steel','glass','energy'], robot:['alloy','battery','life'],
 };
 export const STARTING_MONEY=500;
+export const BOARD_COLS=24;
+export const BOARD_ROWS=18;
 export const DISCOVERY_BATCHES=3;
 const tiers={};
 export function registerGenerated(s){
@@ -120,7 +122,7 @@ const alive=[];for(const p of s.particles){
   const step=transportStep(s,p);
   if(!step){p.progress=1;alive.push(p);continue;}
   const {nx,ny,dest,dir}=step;
-  if(nx<0||nx>=12||ny<0||ny>=9)continue;
+  if(nx<0||nx>=BOARD_COLS||ny<0||ny>=BOARD_ROWS)continue;
   if(dest?.type==='seller'){s.money+=elements[p.el].value;s.earned+=elements[p.el].value;s.sold++;continue;}
   if(dest?.type==='factory'&&(dest.stock[p.el]||0)<20){dest.stock[p.el]=(dest.stock[p.el]||0)+1;continue;}
   if((!dest||['belt','fan','lift'].includes(dest.type))&&!s.particles.some(q=>q!==p&&q.x===nx&&q.y===ny)){

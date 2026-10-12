@@ -1,7 +1,7 @@
 import {createSideViewRenderer} from './side-view.js';
 import {extendConveyor} from './conveyors.js';
 import {iconMarkup,createSprites} from './art.js';
-import {elements,recipes,key,fresh,price,place,remove,tick,prepareState,factoryDuration,DISCOVERY_BATCHES,productionInterval,producerLevel,upgradeCost,upgradeProducer,MAX_PRODUCER_LEVEL} from './engine.js';
+import {BOARD_COLS,BOARD_ROWS,elements,recipes,key,fresh,price,place,remove,tick,prepareState,factoryDuration,DISCOVERY_BATCHES,productionInterval,producerLevel,upgradeCost,upgradeProducer,MAX_PRODUCER_LEVEL} from './engine.js';
 const sprites=createSprites();
 const reducedMotionPreference=window.matchMedia('(prefers-reduced-motion: reduce)');
 const $=s=>document.querySelector(s);let state;try{const saved=JSON.parse(localStorage.getItem('jagace-v1'));state=saved?.blocks&&saved?.unlocked?prepareState(saved):fresh();}catch{state=fresh();}
@@ -10,7 +10,7 @@ let knownUnlocks=new Set(state.unlocked);
 let knownDiscoveries=new Set([...state.unlocked,...Object.keys(state.crafted).filter(el=>state.crafted[el]>0)]);
 function progressSignature(){return Object.keys(recipes).filter(el=>!state.unlocked.includes(el)).map(el=>`${el}:${state.crafted[el]||0}`).join('|');}
 let knownProgress=progressSignature();
-let tab='build',selection=null,direction=0,paused=false,speed=1,zoom=1,hover=null,erase=false;const canvas=$('#game'),ctx=canvas.getContext('2d');let cell=49,ox=0,oy=0,W=0,H=0;const COLS=12,ROWS=9;
+let tab='build',selection=null,direction=0,paused=false,speed=1,zoom=1,hover=null,erase=false;const canvas=$('#game'),ctx=canvas.getContext('2d');let cell=49,ox=0,oy=0,W=0,H=0;const COLS=BOARD_COLS,ROWS=BOARD_ROWS;
 const sideView=createSideViewRenderer(ctx,sprites);
 function viewport(){return {ox,oy,cell,cols:COLS,rows:ROWS,width:W,height:H,reducedMotion:reducedMotionPreference.matches};}
 function toast(text){$('#toast').textContent=text;$('#toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').classList.remove('show'),3000)}

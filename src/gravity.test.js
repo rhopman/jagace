@@ -4,6 +4,12 @@ import {fresh,place,key,tick,prepareState} from './engine.js';
 const empty=()=>({...fresh(),blocks:{},particles:[],money:1000});
 const run=s=>{for(let i=0;i<600;i++)tick(s,.05);};
 
+test('new building area transports cargo beyond the old right and bottom edges',()=>{
+  const s=empty();place(s,21,16,'producer','earth');place(s,22,16,'belt');place(s,23,16,'seller');
+  place(s,16,10,'producer','water',1);place(s,16,17,'seller');
+  run(s);assert.ok(s.sold>=10);assert.ok(s.earned>s.sold*3);
+});
+
 test('elements fall through open space onto a seller without vertical belts',()=>{
   const s=empty();place(s,2,0,'producer','earth',1);place(s,2,5,'seller');
   run(s);assert.ok(s.sold>=6);assert.equal(s.earned,s.sold*3);
