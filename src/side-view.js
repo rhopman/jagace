@@ -227,20 +227,31 @@ export function createSideViewRenderer(ctx, sprites) {
     drawBackdrop(v,showGrid){
       const {ox,oy,cell:c,cols,rows}=v;
       ctx.save();
-      // White workshop wall, subtle level marks, and a side elevation floor.
+      // Fixed star positions keep the galaxy calm while the factory moves.
+      for(let i=0;i<150;i++){
+        const sx=((i*127+19)%997)/997*v.width;
+        const sy=((i*i*37+53)%991)/991*v.height;
+        const size=i%11===0?2:1;
+        ctx.fillStyle=i%4===0?'#b0b6e6':i%7===0?'#e8c0df':'#edf0ff';
+        ctx.globalAlpha=i%3===0?.75:.35;
+        ctx.fillRect(Math.floor(sx),Math.floor(sy),size,size);
+        if(i%23===0){ctx.fillRect(Math.floor(sx)-2,Math.floor(sy),5,1);ctx.fillRect(Math.floor(sx),Math.floor(sy)-2,1,5);}
+      }
+      ctx.globalAlpha=1;
+      // Quiet level marks and a platform boundary against the galaxy.
       const floor=oy+rows*c;
-      line(ox-12,floor,ox+cols*c+12,floor,'#c3dce4',1.5);
-      box(ox-12,floor+2,cols*c+24,6,'#f2fafb',null,0);
+      line(ox-12,floor,ox+cols*c+12,floor,'#687899',1.5);
+      box(ox-12,floor+2,cols*c+24,6,'#161e36',null,0);
       ctx.font='7px sans-serif';ctx.textAlign='right';ctx.fillStyle='#92aebb';
       for(let row=0;row<rows;row++){
         const y=oy+(row+.9)*c;
         line(ox-9,y,ox-4,y,'#cde1e6');
         if(c>=32)ctx.fillText(String(rows-row).padStart(2,'0'),ox-14,y+2);
-        if(showGrid){line(ox,y,ox+cols*c,y,'#eef6f8');}
+        if(showGrid){line(ox,y,ox+cols*c,y,'#27314b');}
       }
       if(showGrid){
         ctx.strokeStyle='#e5f1f5';ctx.setLineDash([2,5]);
-        for(let col=0;col<=cols;col++)line(ox+col*c,oy,ox+col*c,floor,'#e5f1f5');
+        for(let col=0;col<=cols;col++)line(ox+col*c,oy,ox+col*c,floor,'#35405c');
         ctx.setLineDash([]);
       }
       ctx.restore();

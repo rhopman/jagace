@@ -10,7 +10,7 @@
 @media(min-width:1001px){main{max-width:1800px;padding-left:2.5%;padding-right:2.5%}.workspace{grid-template-columns:256px minmax(0,1fr)}}
 @media(min-width:651px){.canvas-wrap{min-height:clamp(620px,72vh,900px)}}
 @media(max-width:650px){.canvas-wrap{min-height:500px}}
-/* Retro arcade panels and a clean white playfield. */
+/* Retro arcade panels. */
 :root{font-family:'Courier New',monospace;--green:#26243c;--line:#26243c;--orange:#e96045;color:#26243c}
 header{border-bottom:3px solid #26243c}.brand,h1,.balance strong,dialog h2,.upgrade-heading h2,.price,.upgrade-metrics strong{font-family:'Courier New',monospace}.brandmark{color:#e96045}
 h1{font-weight:700;letter-spacing:-2px}h1 em{color:#e96045}.intro p{color:#605c75}.eyebrow{color:#686080}
@@ -24,3 +24,5 @@ button{transition:none}button:hover{filter:none;background-color:#fff0ac}button:
 .recipe-banner{background:#dfece4;border-left:3px solid #26243c}.spark{color:#e96045}.recipe-banner h3{color:#26243c}.recipe-banner p{color:#6a6d6d}.recipe-banner button,.upgrade-buy{background:#e96045;color:#fff;border:2px solid #26243c;border-radius:0;box-shadow:2px 2px 0 #26243c;padding:10px 12px;font-weight:700}.recipe-banner button{margin-left:auto}.recipe-banner button:hover,.upgrade-buy:hover{background:#d64c38}.upgrade-preview strong{color:#d4533d}.upgrade-buy:disabled{background:#ddd8e6;color:#81798f}
 .header-right button,#toast,.recipe-row button,.upgrade-controls button{border-radius:0}#toast{border:2px solid #26243c;background:#fff0ac;color:#26243c;box-shadow:4px 4px 0 #26243c}
 @media(max-width:650px){.brand{font-size:17px}.board-header h2{font-size:12px}.plot{margin-left:8px}.shop,.factory,.balance,.recipe-banner{box-shadow:3px 3px 0 #26243c}}
+.canvas-wrap{background-color:#090c24;background-image:radial-gradient(ellipse at 20% 35%,#55328866 0,transparent 48%),radial-gradient(ellipse at 78% 65%,#245e8866 0,transparent 48%),radial-gradient(ellipse at 55% 15%,#84345833 0,transparent 42%);background-size:auto}
+.canvas-wrap .plot-label,.canvas-wrap .hover-status{color:#b9b4db}.canvas-wrap .plot-label span{color:#8f95bd}.canvas-wrap #placement-hint{color:#c1bfd9;text-shadow:0 1px 3px #090c24}.canvas-wrap .hover-status i{background:#e5d8ff}
