@@ -10,3 +10,14 @@
 @media(min-width:1001px){main{max-width:1800px;padding-left:2.5%;padding-right:2.5%}.workspace{grid-template-columns:256px minmax(0,1fr)}}
 @media(min-width:651px){.canvas-wrap{min-height:clamp(620px,72vh,900px)}}
 @media(max-width:650px){.canvas-wrap{min-height:500px}}
+/* A colorful, tactile workshop with a white drawing surface. */
+:root{--green:#244f42;--line:#d8dfd4;--orange:#df9c46}
+header{border-bottom:3px solid #244f42}.brandmark{color:#da9843}
+h1{font-weight:600}h1 em{color:#b47a35}.intro p{color:#697666}
+.balance{background:#244f42;border-color:#244f42;box-shadow:0 5px 0 #d9e3d5}.balance>span,.balance>div{color:#c2d3bd}.balance strong{color:#fffaf0}.balance strong small{color:#e5b966}
+.shop,.factory{border-radius:12px;box-shadow:0 5px 16px #2947380c}.shop{background:#f8f8f1}.section-title{border-top:4px solid #d8a253}.shop-item{border-color:#d9dfce;box-shadow:0 2px 0 #e4e8da;transition:background .15s,border-color .15s}.shop-item:hover{background:#f2f5e8;border-color:#9daf82;filter:none}.shop-item.selected{background:#e8eed9;border:2px solid #688456;padding:9px}.item-text small{color:#717c68}.price{color:#49623d;font-weight:600}.icon{box-shadow:inset 0 0 0 1px #69735c18}.shop-label{color:#718060;font-weight:700;letter-spacing:1.2px}
+.board-header{background:#244f42;color:#fffaf0;border-bottom:3px solid #d8a253}.board-header h2{font-size:15px}.board-header .live-dot{background:#e8b65c}.plot{background:#426650;color:#e7eddc}.board-actions button{border-color:#6e8c72;color:#fff9e8;background:#355c49}.board-actions button:hover{background:#4c7357}.canvas-wrap{background-color:#fff;background-image:radial-gradient(#b6c3a62b .75px,transparent .75px);background-size:20px 20px}
+.board-footer{background:#f3f5e9;color:#697c59}.plot-label,.hover-status{color:#73845e}.plot-label span{color:#8d9b78}.zoom{background:#fffaf0;border-color:#c6cfae;box-shadow:0 2px 4px #334a2c12}.zoom button{color:#31553c;font-weight:700}.zoom button:hover{background:#e8eeda;border-radius:3px}
+.recipe-banner{background:#f8edd7;border-color:#e5d4ac;border-left:4px solid #d8a253}.spark{color:#bd873a}.recipe-banner h3{color:#5e533d}.recipe-banner p{color:#817359}.recipe-banner button{background:#244f42;color:#fffaf0;padding:10px 14px;border-radius:6px;margin-left:auto}
+.upgrade-buy{background:#426c45}.upgrade-preview strong{color:#7f6537}.upgrade-preview small{color:#718459}.upgrade-buy:disabled{background:#e1e7d8;color:#7d8e73}
+@media(prefers-reduced-motion:reduce){.shop-item{transition:none}}

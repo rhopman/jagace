@@ -157,7 +157,8 @@ export function createSideViewRenderer(ctx, sprites) {
     if(b.type==='producer'){
       // A glazed machine housing keeps the produced material visible.
       box(x+c*.17,y+c*.18,c*.66,c*.65,'#eff1eb',edge,4);
-      box(x+c*.21,y+c*.13,c*.58,c*.09,alloy,null,2);
+      box(x+c*.21,y+c*.13,c*.58,c*.09,e.color,null,2);
+      for(const px of [.21,.79]){ctx.beginPath();ctx.arc(x+c*px,y+c*.77,c*.018,0,Math.PI*2);ctx.fillStyle='#9bA68b';ctx.fill();}
       glowLine(x+c*.3,y+c*.22,x+c*.7,y+c*.22);
       box(x+c*.25,y+c*.29,c*.5,c*.38,e.bg,e.generated?e.color:e.color+'88',3);
       sprite(b.el,x+c*.32,y+c*.3,c*.36);
@@ -177,10 +178,10 @@ export function createSideViewRenderer(ctx, sprites) {
     }else if(b.type==='factory'){
       // A mixing gear and warning lamp mark the combination machine.
       box(x+c*.08,y+c*.3,c*.84,c*.53,'#e3e8dc',edge,4);
-      box(x+c*.17,y+c*.2,c*.66,c*.12,alloy,null,2);
+      box(x+c*.17,y+c*.2,c*.66,c*.12,'#b98759',null,2);
       box(x+c*.2,y+c*.12,c*.14,c*.08,'#a3a995',edge,1);
       ctx.save();ctx.shadowColor=cyan;ctx.shadowBlur=5;ctx.beginPath();ctx.arc(x+c*.5,y+c*.08,c*.025,0,Math.PI*2);ctx.fillStyle=cyan;ctx.fill();ctx.restore();
-      box(x+c*.15,y+c*.39,c*.18,c*.25,'#697362',null,2);
+      box(x+c*.15,y+c*.39,c*.18,c*.25,'#8f7254',null,2);
       for(let i=0;i<3;i++)glowLine(x+c*.18,y+c*(.44+i*.065),x+c*.29,y+c*(.44+i*.065));
       box(x+c*.4,y+c*.38,c*.4,c*.33,'#f3f5ed','#a4b29a',3);
       ctx.save();ctx.translate(x+c*.6,y+c*.535);ctx.rotate(state.clock*.7);
@@ -193,7 +194,7 @@ export function createSideViewRenderer(ctx, sprites) {
       // A compact cash terminal shares the same support base.
       box(x+c*.14,y+c*.64,c*.72,c*.18,'#d5dccc',edge,3);
       box(x+c*.4,y+c*.5,c*.2,c*.15,alloy,null,1);
-      box(x+c*.18,y+c*.22,c*.64,c*.35,'#e9efdd','#a1b38b',3);
+      box(x+c*.18,y+c*.22,c*.64,c*.35,'#f5e6c8','#c4a76c',3);
       glowLine(x+c*.25,y+c*.57,x+c*.75,y+c*.57);
       ctx.font=`600 ${c*.25}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#678053';ctx.fillText('$',x+c*.5,y+c*.39);
       for(const px of [.24,.76])glowLine(x+c*px,y+c*.72,x+c*(px+.04),y+c*.72,2);
