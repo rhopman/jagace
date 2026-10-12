@@ -26,10 +26,21 @@ test('generic factories discover combinations from stock and unlock producers af
   assert.match(place(s,2,1,'belt'),/occupied/);
 });
 
-test('generic factories have a fixed price while advanced combinations take longer',()=>{
+test('generic factories have a fixed price and combine every recipe instantly',()=>{
   assert.equal(price('factory','lava'),180);
   assert.equal(price('factory','steel'),price('factory','glass'));
-  assert.ok(factoryDuration('steel')>factoryDuration('lava'));
+  assert.equal(factoryDuration('steel'),0);assert.equal(factoryDuration('lava'),0);
+});
+
+test('factory combines in the same tick as the last ingredient arrives',()=>{
+  const s=fresh();s.blocks={};s.particles=[];place(s,2,2,'factory');const b=s.blocks[key(2,2)];b.stock={earth:1};
+  s.particles=[{x:1,y:2,el:'fire',dir:0,progress:1}];tick(s,0);
+  assert.equal(s.crafted.lava,1);assert.equal(s.particles[0].el,'lava');assert.equal(b.stock.earth,0);
+});
+test('instant factories retain ingredients when output is full and resume when cleared',()=>{
+  const s=fresh();s.blocks={};s.particles=[];place(s,2,2,'factory');const b=s.blocks[key(2,2)];b.stock={earth:6,fire:6};
+  tick(s,0);assert.equal(s.crafted.lava,4);assert.equal(b.stock.earth,2);
+  s.particles=[];tick(s,0);assert.equal(s.crafted.lava,6);assert.equal(b.stock.earth,0);
 });
 
 test('three-input mode preserves a valid pair until the slower third ingredient arrives',()=>{

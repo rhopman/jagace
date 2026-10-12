@@ -81,7 +81,7 @@ export function elementTier(el){
   if(tiers[el])return tiers[el];
   return tiers[el]=recipes[el]?1+Math.max(...recipes[el].map(elementTier)):0;
 }
-export function factoryDuration(el){return 2+.6*Math.max(0,elementTier(el)-1)+Math.max(0,(recipes[el]?.length||2)-2);}
+export function factoryDuration(){return 0;}
 export function missingIngredients(s,el){return (recipes[el]||[]).filter(input=>!s.unlocked.includes(input));}
 export const MAX_PRODUCER_LEVEL=6;
 export function producerLevel(block){return Number.isInteger(block?.level)?Math.max(1,Math.min(MAX_PRODUCER_LEVEL,block.level)):1;}
@@ -115,7 +115,8 @@ export function price(type,el){return type==='producer'?elements[el].cost:type==
 export function place(s,x,y,type,el,dir=0){if(type==='pusher'){const b=s.blocks[key(x,y)];if(b?.type!=='belt')return 'Place a pusher behind an existing conveyor belt.';if(b.pusher)return 'This belt already has a pusher.';const cost=price('pusher');if(s.money<cost)return 'Not enough money for a pusher.';s.money-=cost;b.pusher={drop:[],paid:cost};return null;}if(s.blocks[key(x,y)])return 'This tile is already occupied.';if(type==='belt'&&dir===3)type='fan';if(type==='lift'&&dir%2===0)dir=3;if(type==='producer'&&!s.unlocked.includes(el))return `Craft ${DISCOVERY_BATCHES} batches in a factory to unlock this producer.`;const cost=price(type,el);if(s.money<cost)return 'Not enough money. Let your factory earn a little more.';s.money-=cost;s.blocks[key(x,y)]={x,y,type,el:type==='factory'?null:el,dir:type==='fan'?3:dir,timer:0,stock:{},paid:cost,level:1};return null;}
 export function remove(s,x,y){let b=s.blocks[key(x,y)];if(!b)return false;if(b.pusher){s.money+=Math.floor(b.pusher.paid*.5);delete b.pusher;return true;}s.money+=Math.floor(((b.paid??(b.type==='factory'?150:price(b.type,b.el)))+(b.upgradeSpent||0))*.5);delete s.blocks[key(x,y)];return true;}
 function output(s,b,el){if(s.particles.filter(p=>p.x===b.x&&p.y===b.y).length>=4)return false;s.particles.push({x:b.x,y:b.y,fromX:b.x,fromY:b.y,el,progress:0,dir:b.dir});return true;}
-export function tick(s,dt){prepareState(s);s.clock+=dt;for(const b of Object.values(s.blocks)){b.timer+=dt;if(b.type==='producer'&&b.timer>=productionInterval(b)){if(output(s,b,b.el))b.timer=0;}if(b.type==='factory'){const result=resolveFactoryRecipe(s,b);if(result&&b.timer>=factoryDuration(result)&&output(s,b,result)){recipes[result].forEach(el=>b.stock[el]--);b.timer=0;s.crafted[result]=(s.crafted[result]||0)+1;if(s.crafted[result]>=DISCOVERY_BATCHES&&!s.unlocked.includes(result))s.unlocked.push(result);}}}
+export function tick(s,dt){prepareState(s);s.clock+=dt;for(const b of Object.values(s.blocks)){b.timer+=dt;if(b.type==='producer'&&b.timer>=productionInterval(b)){if(output(s,b,b.el))b.timer=0;}}
+
 const alive=[];for(const p of s.particles){
   p.progress+=dt*(p.airborne?2.5:1.7);
   if(p.progress<1){alive.push(p);continue;}
@@ -129,7 +130,9 @@ const alive=[];for(const p of s.particles){
     p.fromX=p.x;p.fromY=p.y;p.x=nx;p.y=ny;p.dir=dest?.type==='fan'?3:dest?.dir??dir;p.airborne=!dest;p.progress=0;
   }else p.progress=1;
   alive.push(p);
-}s.particles=alive;}
+}s.particles=alive;
+for(const b of Object.values(s.blocks)){if(b.type!=='factory')continue;while(true){const result=resolveFactoryRecipe(s,b);if(!result||!output(s,b,result))break;recipes[result].forEach(el=>b.stock[el]--);b.timer=0;s.crafted[result]=(s.crafted[result]||0)+1;if(s.crafted[result]>=DISCOVERY_BATCHES&&!s.unlocked.includes(result))s.unlocked.push(result);}}
+}
 export function transportStep(s,p){
   const b=s.blocks[key(p.x,p.y)];
   let dir=b?.type==='fan'?3:b?.dir??(p.airborne?(p.dir===3?3:1):p.dir);
