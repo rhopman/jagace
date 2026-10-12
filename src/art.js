@@ -1,6 +1,7 @@
 import {elements} from './engine.js';
 // Shared vector illustrations keep the shop, buildings and moving cargo consistent.
 const art = {
+  pusher: '<rect x="9" y="10" width="46" height="17" rx="3" fill="#b4bea4"/><path d="M26 27v10h12V27" fill="#626b68"/><path d="M16 40h32" stroke="#d5b566" stroke-width="6"/><path d="M32 46v13m-6-6 6 6 6-6" stroke="#8d784c" stroke-width="3"/>',
   paper: '<path fill="#f3eedc" d="M15 5h25l10 12v42H15Z"/><path d="M40 5v12h10M22 28h20M22 36h20M22 44h15" stroke="#aaa58d"/>',
   moss: '<path fill="#799950" d="m7 48 5-18 13-8 15 3 16 15-5 15H12Z"/><path d="m17 39 9-7m7 12 10-9m-17 16 8-7" stroke="#b4cd87" stroke-width="5"/>',
   obsidian: '<path fill="#63516e" d="m11 48 6-25 20-16 15 21-5 29-23 2Z"/><path fill="#9784aa" d="m17 23 20-16-7 30-19 11Z"/><path d="m30 37 22-9m-22 9-6 22" stroke="#46384f"/>',

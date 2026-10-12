@@ -40,6 +40,13 @@ export function createSideViewRenderer(ctx, sprites) {
   }
   function drawConveyor(state,b,v) {
     const c=v.cell,x=v.ox+b.x*c,y=v.oy+b.y*c;
+    if(b.pusher){
+      box(x+c*.18,y+c*.25,c*.64,c*.19,'#b4bea4',edge,3);
+      box(x+c*.39,y+c*.43,c*.22,c*.09,alloy,edge,1);
+      const active=state.particles.some(p=>p.x===b.x&&p.y===b.y&&b.pusher.drop.includes(p.el));
+      box(x+c*.3,y+c*(active?.54:.48),c*.4,c*.045,'#d5b566',null,1);
+      arrow(x+c*.75,y+c*.43,1,c*.065,'#8d784c');
+    }
     const {inputs,output,outputConnected}=conveyorConnections(state,b);
     const ports=new Set([...inputs,output]);
     if(!inputs.length)ports.add((output+2)%4);
